@@ -15,12 +15,14 @@ namespace JirHub.MVCWebApp.NguyenLPK.Controllers
     {
         private readonly IProjectRepoService _projectRepoService;
         private readonly IGithubService _githubService;
+        private readonly IClassGroupService _classGroupService;
 
 
-        public ProjectReposNguyenLpksController(IProjectRepoService projectRepoService, IGithubService githubService)
+        public ProjectReposNguyenLpksController(IProjectRepoService projectRepoService, IGithubService githubService, IClassGroupService classGroupService)
         {
             _projectRepoService = projectRepoService;
             _githubService = githubService;
+            _classGroupService = classGroupService;
         }
 
         // GET: ProjectReposNguyenLpks
@@ -82,10 +84,10 @@ namespace JirHub.MVCWebApp.NguyenLPK.Controllers
 
 
         // GET: ProjectReposNguyenLpks/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
 
-            //ViewData["GroupId"] = new SelectList(_context.ClassGroups, "GroupId", "GroupName");
+            ViewData["GroupId"] = new SelectList(await _classGroupService.GetAllClassGroupAsync(), "GroupId", "GroupName");
             return View();
         }
 
@@ -111,8 +113,8 @@ namespace JirHub.MVCWebApp.NguyenLPK.Controllers
                   
             }
 
-            var projectRepos = await _projectRepoService.GetAllAsync();
-            ViewData["GroupId"] = new SelectList(projectRepos, "GroupId", "GroupName", projectReposNguyenLpk.GroupId);
+            var classGroups = await _classGroupService.GetAllClassGroupAsync();
+            ViewData["GroupId"] = new SelectList(classGroups, "GroupId", "GroupName", projectReposNguyenLpk.GroupId);
             return View(projectReposNguyenLpk);
         }
 

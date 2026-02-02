@@ -17,6 +17,9 @@ builder.Services.AddScoped<IProjectRepoService, ProjectRepoService>();
 builder.Services.AddScoped<IWorkLinkService, WorkLinkService>();
 builder.Services.AddScoped<ISystemUserAccountService, SystemUserAccountService>();
 builder.Services.AddScoped<IGithubCommitService, GithubCommitService>();
+builder.Services.AddScoped<IClassGroupService, ClassGroupService>();
+
+
 
 builder.Services.AddAuthentication()
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>

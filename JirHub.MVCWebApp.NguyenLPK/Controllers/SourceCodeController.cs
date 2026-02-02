@@ -28,6 +28,7 @@ namespace JirHub.MVCWebApp.NguyenLPK.Controllers
             ViewBag.GroupId = groupId;
             return View(await _projectRepoService.GetProjectRepoByGroupId(groupId));
         }
+
         [Authorize(Roles = "1")]
         [HttpPost]
         public IActionResult AddRepo(int groupId, string repoUrl, string repoType)

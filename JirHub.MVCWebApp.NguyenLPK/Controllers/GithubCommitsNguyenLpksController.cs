@@ -35,6 +35,7 @@ namespace JirHub.MVCWebApp.NguyenLPK.Controllers
             }
 
             var githubCommitsNguyenLpk = await _githubCommitService.GetCommitByIdAsync(id);
+
             if (githubCommitsNguyenLpk == null)
             {
                 return NotFound();
