@@ -27,12 +27,25 @@ namespace JirHub.Repositories.NguyenLPK.implements
             return await _context.GithubPullRequestsNguyenLpks.FirstOrDefaultAsync(p => p.PrNumber == number && p.RepoId == repoId);
         }
 
+        public async Task<List<GithubPullRequestsNguyenLpk>> GetAllPullRequestsAsync()
+        {
+            return await _context.GithubPullRequestsNguyenLpks.Include(g => g.MappedMember).Include(g => g.Repo).ToListAsync();
+        }
+
+        public async Task<GithubPullRequestsNguyenLpk> GetPullRequestByIdAsync(long? id)
+        {
+            return await _context.GithubPullRequestsNguyenLpks.Include(g => g.MappedMember).Include(g => g.Repo).FirstOrDefaultAsync(m => m.PrId == id);
+        }
+
         public async Task<GithubPullRequestsNguyenLpk> GetPullRequestByNumberAsync(int repoId, int prNumber)
         {
             return await _context.Set<GithubPullRequestsNguyenLpk>().Include(p => p.GithubPrReviewsNguyenLpks).FirstOrDefaultAsync(p => p.RepoId == repoId && p.PrNumber == prNumber);
         }
 
-        
+        public async Task<List<GithubPullRequestsNguyenLpk>> SearchPullRequestsAsync(int repoId, string repoName)
+        {
+            return await _context.GithubPullRequestsNguyenLpks.Include(g => g.MappedMember).Where(p => p.RepoId == repoId || p.Repo.RepoName == repoName).OrderByDescending(p => p.CreatedAt).ToListAsync();
+        }
 
         public async Task UpdatePullRequestAsync(GithubPullRequestsNguyenLpk pr)
         {

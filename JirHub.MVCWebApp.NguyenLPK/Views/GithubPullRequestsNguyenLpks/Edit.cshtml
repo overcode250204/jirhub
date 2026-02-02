@@ -1,0 +1,101 @@
+﻿@model JirHub.Entities.NguyenLPK.Models.GithubPullRequestsNguyenLpk
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>GithubPullRequestsNguyenLpk</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="PrId" />
+            <div class="form-group">
+                <label asp-for="RepoId" class="control-label"></label>
+                <select asp-for="RepoId" class="form-control" asp-items="ViewBag.RepoId"></select>
+                <span asp-validation-for="RepoId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PrNumber" class="control-label"></label>
+                <input asp-for="PrNumber" class="form-control" />
+                <span asp-validation-for="PrNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="State" class="control-label"></label>
+                <input asp-for="State" class="form-control" />
+                <span asp-validation-for="State" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IsMerged" class="control-label"></label>
+                <input asp-for="IsMerged" class="form-control" />
+                <span asp-validation-for="IsMerged" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AuthorGithubUsername" class="control-label"></label>
+                <input asp-for="AuthorGithubUsername" class="form-control" />
+                <span asp-validation-for="AuthorGithubUsername" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MappedMemberId" class="control-label"></label>
+                <select asp-for="MappedMemberId" class="form-control" asp-items="ViewBag.MappedMemberId"></select>
+                <span asp-validation-for="MappedMemberId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Additions" class="control-label"></label>
+                <input asp-for="Additions" class="form-control" />
+                <span asp-validation-for="Additions" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Deletions" class="control-label"></label>
+                <input asp-for="Deletions" class="form-control" />
+                <span asp-validation-for="Deletions" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ChangedFiles" class="control-label"></label>
+                <input asp-for="ChangedFiles" class="form-control" />
+                <span asp-validation-for="ChangedFiles" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CreatedAt" class="control-label"></label>
+                <input asp-for="CreatedAt" class="form-control" />
+                <span asp-validation-for="CreatedAt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UpdatedAt" class="control-label"></label>
+                <input asp-for="UpdatedAt" class="form-control" />
+                <span asp-validation-for="UpdatedAt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MergedAt" class="control-label"></label>
+                <input asp-for="MergedAt" class="form-control" />
+                <span asp-validation-for="MergedAt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ClosedAt" class="control-label"></label>
+                <input asp-for="ClosedAt" class="form-control" />
+                <span asp-validation-for="ClosedAt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LinkedIssueKey" class="control-label"></label>
+                <input asp-for="LinkedIssueKey" class="form-control" />
+                <span asp-validation-for="LinkedIssueKey" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

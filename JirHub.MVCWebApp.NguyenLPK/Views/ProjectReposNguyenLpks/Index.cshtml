@@ -48,11 +48,11 @@
                 <td><span class="badge bg-info">@item.RepoType</span></td>
                 <td><a href="@item.RepoUrl" target="_blank">Link GitHub</a></td>
                 <td>
-                    <a asp-controller="GithubCommitsNguyenlpks" asp-action="Index" asp-route-repoId="@item.RepoId" class="btn btn-sm btn-outline-secondary">
+                    <a asp-controller="GithubCommitsNguyenLpks" asp-action="Index" asp-route-repoId="@item.RepoId" class="btn btn-sm btn-outline-secondary">
                         Commits
                     </a>
 
-                    <a asp-action="PullRequests" asp-route-id="@item.RepoId" class="btn btn-sm btn-outline-secondary">
+                    <a asp-controller="GithubPullRequestsNguyenLpks" asp-action="Index" asp-route-repoId="@item.RepoId" class="btn btn-sm btn-outline-secondary">
                         PRs
                     </a>
 

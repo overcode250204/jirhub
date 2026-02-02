@@ -164,7 +164,7 @@ namespace JirHub.Services.NguyenLPK.implements
                 var issues = await client.Issue.GetAllForRepository(owner, name);
                 foreach (var issue in issues)
                 {
-                    if (issue.PullRequest != null) continue; // Bỏ qua PR
+                    if (issue.PullRequest != null) continue;
 
                     bool exists = await _githubIssueRepository.ExistIusse(issue.Number, repo.RepoId);
                     if (!exists)

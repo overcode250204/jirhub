@@ -1,0 +1,119 @@
+﻿@model IEnumerable<JirHub.Entities.NguyenLPK.Models.GithubPullRequestsNguyenLpk>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.PrNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.State)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsMerged)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AuthorGithubUsername)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Additions)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Deletions)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ChangedFiles)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedAt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UpdatedAt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MergedAt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClosedAt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LinkedIssueKey)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MappedMember)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Repo)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PrNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.State)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsMerged)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AuthorGithubUsername)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Additions)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Deletions)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ChangedFiles)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedAt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UpdatedAt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MergedAt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ClosedAt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LinkedIssueKey)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MappedMember.MemberId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Repo.RepoId)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.PrId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.PrId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.PrId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
