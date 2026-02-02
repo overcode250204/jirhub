@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="JirHub.Entities.NguyenLPK/JirHub.Entities.NguyenLPK.csproj" />
+  <Project Path="JirHub.MVCWebApp.NguyenLPK/JirHub.MVCWebApp.NguyenLPK.csproj" />
+  <Project Path="JirHub.Repositories.NguyenLPK/JirHub.Repositories.NguyenLPK.csproj" />
+  <Project Path="JirHub.Services.NguyenLPK/JirHub.Services.NguyenLPK.csproj" />
+</Solution>

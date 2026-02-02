@@ -1,0 +1,72 @@
+﻿@model JirHub.Entities.NguyenLPK.Models.GithubCommitsNguyenLpk
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>GithubCommitsNguyenLpk</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CommitHash)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CommitHash)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Message)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Message)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Additions)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Additions)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Deletions)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Deletions)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CommittedDate)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CommittedDate)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.AuthorGithubUsername)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.AuthorGithubUsername)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.LinkedIssueKey)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.LinkedIssueKey)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.MappedMember)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.MappedMember.MemberId)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Repo)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Repo.RepoId)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.CommitId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

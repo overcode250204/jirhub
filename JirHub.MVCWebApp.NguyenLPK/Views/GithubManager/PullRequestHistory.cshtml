@@ -1,0 +1,77 @@
+﻿@model IEnumerable<JirHub.Entities.NguyenLPK.Models.GithubPullRequestsNguyenLpk>
+
+@{
+    ViewData["Title"] = "Lịch sử Pull Request";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2>🔀 Lịch sử Pull Request & Review</h2>
+    <a asp-action="Index" class="btn btn-secondary mb-3">&larr; Quay lại</a>
+
+    <table class="table table-bordered table-hover">
+        <thead class="table-primary">
+            <tr>
+                <th>PR #</th>
+                <th>Tiêu đề & Jira Key</th>
+                <th>Người tạo</th>
+                <th>Trạng thái</th>
+                <th>Người Review (Teamwork)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td><strong>#@item.PrNumber</strong></td>
+                    <td>
+                        @item.Title <br />
+                        @if (!string.IsNullOrEmpty(item.LinkedIssueKey))
+                        {
+                            <span class="badge bg-info">@item.LinkedIssueKey</span>
+                        }
+                    </td>
+                    <td>@item.AuthorGithubUsername</td>
+                    <td>
+                        @if (item.State == "merged")
+                        {
+                            <span class="badge bg-success">Đã Merge</span>
+                        }
+                        else if (item.State == "closed")
+                        {
+                            <span class="badge bg-secondary">Đã đóng</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning text-dark">Đang mở</span>
+                        }
+                    </td>
+                    <td>
+                        @* Hiển thị danh sách người Review *@
+                        @if (item.GithubPrReviewsNguyenLpks != null && item.GithubPrReviewsNguyenLpks.Any())
+                        {
+                            foreach (var rev in item.GithubPrReviewsNguyenLpks)
+                            {
+                                <div>
+                                    <i class="fa fa-user"></i> @rev.ReviewerUsername
+                                    @if (rev.State == "APPROVED")
+                                    {
+                                        <span class="text-success fw-bold"> (Approved)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-warning"> (@rev.State)</span>
+                                    }
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-muted fst-italic">Chưa có review</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

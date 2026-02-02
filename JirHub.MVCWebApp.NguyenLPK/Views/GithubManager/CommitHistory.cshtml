@@ -1,0 +1,63 @@
+﻿@model IEnumerable<JirHub.Entities.NguyenLPK.Models.GithubCommitsNguyenLpk>
+
+@{
+    ViewData["Title"] = "Lịch sử Commit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2>📜 Lịch sử Commit</h2>
+    <a asp-action="Index" class="btn btn-secondary mb-3">&larr; Quay lại danh sách Repo</a>
+
+    <table id="myTable" class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Hash</th>
+                <th>Message</th>
+                <th>Tác giả (GitHub)</th>
+                <th>Ngày Commit</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <span class="badge bg-secondary">@item.CommitHash.Substring(0, 7)</span>
+                        </td>
+                        <td>@item.Message</td>
+                        <td>
+                            <strong>@item.AuthorGithubUsername</strong>
+                            @if (item.MappedMemberId != null)
+                            {
+                                <span class="badge bg-success">Đã map SV</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">Chưa map</span>
+                            }
+                        </td>
+                        <td>@item.CommittedDate?.ToString("dd/MM/yyyy HH:mm")</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4" class="text-center">Chưa có dữ liệu. Hãy bấm "Đồng bộ" trước.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/paginathing.js"></script>
+<script>
+        $('#myTable').paginathing({
+      perPage: 5,
+    })
+
+</script>

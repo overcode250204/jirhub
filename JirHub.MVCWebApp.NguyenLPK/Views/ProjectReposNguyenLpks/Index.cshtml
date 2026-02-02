@@ -1,0 +1,72 @@
+﻿@model IEnumerable<JirHub.Entities.NguyenLPK.Models.ProjectReposNguyenLpk>
+
+<h2>Quản lý Source Code (FN-10 & FN-11)</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<p>
+    <a asp-action="Create" class="btn btn-success">+ Thêm Repo Mới</a>
+</p>
+
+<form asp-action="Index" method="get" class="mb-3">
+    <div class="row">
+        <div class="col-md-3">
+            <input type="text" name="repoName" class="form-control" placeholder="Tên Repo..." value="@ViewData["CurrentFilterName"]" />
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="groupName" class="form-control" placeholder="Tên Nhóm..." value="@ViewData["CurrentFilterGroup"]" />
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+        </div>
+    </div>
+</form>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Group ID</th>
+            <th>Tên Repo</th>
+            <th>Loại</th>
+            <th>URL</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.GroupId</td>
+                <td>@item.RepoName</td>
+                <td><span class="badge bg-info">@item.RepoType</span></td>
+                <td><a href="@item.RepoUrl" target="_blank">Link GitHub</a></td>
+                <td>
+                    <a asp-controller="GithubCommitsNguyenlpks" asp-action="Index" asp-route-repoId="@item.RepoId" class="btn btn-sm btn-outline-secondary">
+                        Commits
+                    </a>
+
+                    <a asp-action="PullRequests" asp-route-id="@item.RepoId" class="btn btn-sm btn-outline-secondary">
+                        PRs
+                    </a>
+
+                    <a asp-action="Edit" asp-route-id="@item.RepoId" class="btn btn-sm btn-warning">Sửa</a>
+                    <a asp-action="Delete" asp-route-id="@item.RepoId" class="btn btn-sm btn-danger">Xóa</a>
+
+                    <form asp-action="SyncGroup" method="post" style="display:inline;">
+                        <input type="hidden" name="groupId" value="@item.GroupId" />
+                        <button type="submit" class="btn btn-sm btn-primary" title="Sync from GitHub">
+                            Sync
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

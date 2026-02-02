@@ -1,0 +1,21 @@
+﻿@model IEnumerable<JirHub.Entities.NguyenLPK.Models.ProjectReposNguyenLpk>
+
+
+<div class="text-center">
+    <h1 class="display-4">Welcome Admin</h1>
+    <table>
+        <tr>
+            <td>
+                Repo
+            </td>
+            <td>
+                @foreach(var repo in ViewBag.ListRepo)
+                {
+                    <span>@repo.RepoName</span>
+                }
+            </td>
+        </tr>
+    </table>
+</div>
+
+

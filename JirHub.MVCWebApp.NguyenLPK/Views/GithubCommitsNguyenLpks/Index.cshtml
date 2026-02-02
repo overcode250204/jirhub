@@ -1,0 +1,112 @@
+﻿@model IEnumerable<JirHub.Entities.NguyenLPK.Models.GithubCommitsNguyenLpk>
+
+@{
+    ViewData["Title"] = "Lịch sử Commit";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+        <div>
+            <h2 class="text-primary">
+                <i class="fab fa-github"></i> Lịch sử Commit
+            </h2>
+            @if (ViewData["RepoId"] != null)
+            {
+                <h5 class="text-muted">Repository: <strong>@ViewData["RepoName"]</strong></h5>
+            }
+        </div>
+        
+        <a asp-controller="ProjectReposNguyenLpks" asp-action="Index" class="btn btn-secondary">
+            <i class="fa fa-arrow-left"></i> Quay lại DS Repo
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table id="myTable" class="table table-hover table-striped align-middle">
+                <thead class="bg-dark text-white">
+                    <tr>
+                        <th style="width: 10%">Hash</th>
+                        <th style="width: 35%">Message</th>
+                        <th style="width: 10%">LOC (+/-)</th>
+                        <th style="width: 15%">Tác giả</th>
+                        <th style="width: 15%">Jira Task (Traceability)</th>
+                        <th style="width: 10%">Ngày Commit</th>
+                        <th style="width: 5%">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model) {
+                    <tr>
+                        <td>
+                            <code class="text-dark bg-light px-2 py-1 rounded border">
+                                @(item.CommitHash.Length > 7 ? item.CommitHash.Substring(0, 7) : item.CommitHash)
+                            </code>
+                        </td>
+
+                        <td>@Html.DisplayFor(modelItem => item.Message)</td>
+
+                        <td class="font-weight-bold">
+                            <span class="text-success" title="Code added">+@item.Additions</span> / 
+                            <span class="text-danger" title="Code deleted">-@item.Deletions</span>
+                        </td>
+
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <i class="fa fa-user-circle text-secondary mr-2"></i>
+                                <div>
+                                    <strong>@item.AuthorGithubUsername</strong>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td>
+                            @if (!string.IsNullOrEmpty(item.LinkedIssueKey))
+                            {
+                                <span class="badge bg-primary p-2" style="font-size: 0.9rem">
+                                    <i class="fab fa-jira"></i> @item.LinkedIssueKey
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="text-muted small font-italic">No Link</span>
+                            }
+                        </td>
+
+                        <td>
+                            @if(item.CommittedDate.HasValue)
+                            {
+                                @item.CommittedDate.Value.ToString("dd/MM/yyyy") <br/>
+                                <small class="text-muted">@item.CommittedDate.Value.ToString("HH:mm")</small>
+                            }
+                        </td>
+
+                        <td>
+                            <div class="btn-group">
+                                <a asp-action="Details" asp-route-id="@item.CommitId" class="btn btn-sm btn-info text-white" title="Chi tiết">
+                                    <i class="fa fa-eye"></i>
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.CommitId" class="btn btn-sm btn-danger" title="Xóa rác">
+                                    <i class="fa fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/paginathing.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#myTable tbody').paginathing({
+            perPage: 10, // Tăng lên 10 nhìn cho thoáng
+            insertAfter: '.card-body',
+            pageNumbers: true
+        });
+    });
+</script>

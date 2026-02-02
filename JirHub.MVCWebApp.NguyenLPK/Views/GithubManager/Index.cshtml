@@ -1,0 +1,65 @@
+﻿@using JirHub.Entities.NguyenLPK.Models
+@model IEnumerable<ProjectReposNguyenLpk>
+
+@{
+    ViewData["Title"] = "Quản lý GitHub";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2>Đồng bộ GitHub</h2>
+    
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success">@TempData["Message"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Repo Name</th>
+                <th>URL</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null)
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.RepoName</td>
+                        <td>@item.RepoUrl</td>
+                        <td>
+                            <form asp-action="Sync" method="post">
+                                <input type="hidden" name="repoId" value="@item.RepoId" />
+                                <button type="submit" class="btn btn-primary">
+                                    🔄 Đồng bộ Commits
+                                </button>
+                            </form>
+                            <a asp-action="CommitHistory" asp-route-repoId="@item.RepoId" class="btn btn-info btn-sm">
+                                📄 Xem Commits
+                            </a>
+                            <form asp-action="SyncPullRequests" method="post" style="display:inline;">
+                                <input type="hidden" name="repoId" value="@item.RepoId" />
+                                <button type="submit" class="btn btn-warning btn-sm">
+                                    🔄 Sync PR & Review
+                                </button>
+                            </form>
+                            <form asp-action="PullRequestHistory" method="get" style="display:inline;">
+                                <input type="hidden" name="repoId" value="@item.RepoId" />
+                                <button type="submit" class="btn btn-warning btn-sm">
+                                    🔄 Pull Request History
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

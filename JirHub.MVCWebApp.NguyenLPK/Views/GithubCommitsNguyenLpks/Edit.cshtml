@@ -1,0 +1,71 @@
+﻿@model JirHub.Entities.NguyenLPK.Models.GithubCommitsNguyenLpk
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>GithubCommitsNguyenLpk</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="CommitId" />
+            <div class="form-group">
+                <label asp-for="CommitHash" class="control-label"></label>
+                <input asp-for="CommitHash" class="form-control" />
+                <span asp-validation-for="CommitHash" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RepoId" class="control-label"></label>
+                <select asp-for="RepoId" class="form-control" asp-items="ViewBag.RepoId"></select>
+                <span asp-validation-for="RepoId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Message" class="control-label"></label>
+                <input asp-for="Message" class="form-control" />
+                <span asp-validation-for="Message" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Additions" class="control-label"></label>
+                <input asp-for="Additions" class="form-control" />
+                <span asp-validation-for="Additions" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Deletions" class="control-label"></label>
+                <input asp-for="Deletions" class="form-control" />
+                <span asp-validation-for="Deletions" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CommittedDate" class="control-label"></label>
+                <input asp-for="CommittedDate" class="form-control" />
+                <span asp-validation-for="CommittedDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AuthorGithubUsername" class="control-label"></label>
+                <input asp-for="AuthorGithubUsername" class="form-control" />
+                <span asp-validation-for="AuthorGithubUsername" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MappedMemberId" class="control-label"></label>
+                <select asp-for="MappedMemberId" class="form-control" asp-items="ViewBag.MappedMemberId"></select>
+                <span asp-validation-for="MappedMemberId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LinkedIssueKey" class="control-label"></label>
+                <input asp-for="LinkedIssueKey" class="form-control" />
+                <span asp-validation-for="LinkedIssueKey" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
