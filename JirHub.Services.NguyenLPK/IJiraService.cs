@@ -8,5 +8,6 @@ namespace JirHub.Services.NguyenLPK
 {
     public class IJiraService
     {
+        Task<List<JiraIssueNguyenLpk>> GetAllIssuesAsync();
     }
 }
