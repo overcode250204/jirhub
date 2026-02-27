@@ -41,7 +41,7 @@ namespace JirHub.Repositories.NguyenLPK.implements
                 .Include(p => p.GithubCommitsNguyenLpks)
                 .Where(p => (p.RepoName.Contains(repoName) || string.IsNullOrEmpty(repoName)) 
                 && (p.RepoType.Contains(repoType) || string.IsNullOrEmpty(repoType))
-                && (p.Group.GroupName.Contains(groupName) || string.IsNullOrEmpty(repoType)))
+                && (p.Group.GroupName.Contains(groupName) || string.IsNullOrEmpty(groupName)))
                 .ToListAsync();
             return items ?? new List<ProjectReposNguyenLpk>();
         }
@@ -59,13 +59,37 @@ namespace JirHub.Repositories.NguyenLPK.implements
         public async Task<bool> DeleteProjectRepo(int? repoId)
         {
             bool result = false;
-            ProjectReposNguyenLpk entity = await _context.ProjectReposNguyenLpks.FindAsync(repoId);
-            if (entity == null) 
-            {
-                result = false;
+            if (repoId == null)
                 return result;
-            } 
-            return await RemoveAsync(entity);
+
+            var repo = await _context.ProjectReposNguyenLpks
+                .FirstOrDefaultAsync(r => r.RepoId == repoId);
+
+            if (repo == null)
+                return result;
+
+            var pullRequests = await _context.GithubPullRequestsNguyenLpks
+                .Where(pr => pr.RepoId == repoId)
+                .ToListAsync();
+
+            var prIds = pullRequests.Select(pr => pr.PrId).ToList();
+
+            var reviews = await _context.GithubPrReviewsNguyenLpks
+                .Where(r => prIds.Contains(r.PrId))
+                .ToListAsync();
+
+            var commits = await _context.GithubCommitsNguyenLpks
+                .Where(c => c.RepoId == repoId)
+                .ToListAsync();
+
+            _context.GithubPrReviewsNguyenLpks.RemoveRange(reviews);
+            _context.GithubPullRequestsNguyenLpks.RemoveRange(pullRequests);
+            _context.GithubCommitsNguyenLpks.RemoveRange(commits);
+            _context.ProjectReposNguyenLpks.Remove(repo);
+
+            await _context.SaveChangesAsync();
+            result = true;
+            return result;
         }
 
         public async Task CreateAsync()

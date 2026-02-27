@@ -15,13 +15,21 @@
     <a asp-action="Create" class="btn btn-success">+ Thêm Repo Mới</a>
 </p>
 
-<form asp-action="Index" method="get" class="mb-3">
+<form asp-action="Index" method="GET" class="mb-3">
     <div class="row">
         <div class="col-md-3">
             <input type="text" name="repoName" class="form-control" placeholder="Tên Repo..." value="@ViewData["CurrentFilterName"]" />
         </div>
         <div class="col-md-3">
             <input type="text" name="groupName" class="form-control" placeholder="Tên Nhóm..." value="@ViewData["CurrentFilterGroup"]" />
+        </div>
+        <div class="col-md-3">
+            <select name="repoType" class="form-control">
+                <option value="">-- Tất cả các loại --</option>
+                <option value="FRONTEND" selected="@(ViewData["CurrentFilterRepoType"]?.ToString() == "FRONTEND")">Frontend</option>
+                <option value="BACKEND" selected="@(ViewData["CurrentFilterRepoType"]?.ToString() == "BACKEND")">Backend</option>
+                <option value="MOBILE" selected="@(ViewData["CurrentFilterRepoType"]?.ToString() == "MOBILE")">Mobile</option>
+            </select>
         </div>
         <div class="col-md-2">
             <button type="submit" class="btn btn-primary">Tìm kiếm</button>

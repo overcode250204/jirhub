@@ -229,9 +229,31 @@ namespace JirHub.Services.NguyenLPK.implements
                 {
                     existingPullRequest.LinkedIssueKey = jiraMapping.Value.ToUpper();
                 }
-
+                await _gitHubPrRepository.UpdatePullRequestAsync(existingPullRequest);
                 IReadOnlyList<PullRequestReview> reviews = await client.PullRequest.Review.GetAll(owner, name, pullRequest.Number);
+                foreach(var review in reviews)
+                {
+                   GithubPrReviewsNguyenLpk existingReview =  await _githubPrReviewRepository.ExistsReview(existingPullRequest.PrId, review.User.Login, review.SubmittedAt.DateTime);
+                    if (existingReview == null)
+                    {
+                        var newReview = new GithubPrReviewsNguyenLpk
+                        {
+                            PrId = existingPullRequest.PrId,
+                            ReviewerUsername = review.User.Login,
+                            State = review.State.StringValue,
+                            SubmittedAt = review.SubmittedAt.DateTime
+                        };
 
+                        var reviewerMember = members.FirstOrDefault(m => m.GithubUsername == newReview.ReviewerUsername);
+                        if (reviewerMember != null)
+                        {
+                            newReview.MappedReviewerId = reviewerMember.MemberId;
+                        }
+                        await _githubPrReviewRepository.CreateAsync(newReview);
+                    }
+                
+                
+                }
             }
 
 

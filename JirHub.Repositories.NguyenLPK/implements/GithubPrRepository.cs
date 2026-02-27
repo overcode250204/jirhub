@@ -44,7 +44,7 @@ namespace JirHub.Repositories.NguyenLPK.implements
 
         public async Task<List<GithubPullRequestsNguyenLpk>> SearchPullRequestsAsync(int repoId, string repoName)
         {
-            return await _context.GithubPullRequestsNguyenLpks.Include(g => g.MappedMember).Where(p => p.RepoId == repoId || p.Repo.RepoName == repoName).OrderByDescending(p => p.CreatedAt).ToListAsync();
+            return await _context.GithubPullRequestsNguyenLpks.Include(g => g.Repo).Include(g => g.MappedMember).Where(p => p.RepoId == repoId || p.Repo.RepoName == repoName).OrderByDescending(p => p.CreatedAt).ToListAsync();
         }
 
         public async Task UpdatePullRequestAsync(GithubPullRequestsNguyenLpk pr)

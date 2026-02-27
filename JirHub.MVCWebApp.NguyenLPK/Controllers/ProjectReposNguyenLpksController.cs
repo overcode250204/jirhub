@@ -37,6 +37,7 @@ namespace JirHub.MVCWebApp.NguyenLPK.Controllers
             var result = await _projectRepoService.SearchProjectRepo(repoName, repoType, groupName);
             ViewData["CurrentFilterName"] = repoName;
             ViewData["CurrentFilterGroup"] = groupName;
+            ViewData["CurrentFilterRepoType"] = repoType;
             return View(result);
         }
 
@@ -223,6 +224,7 @@ namespace JirHub.MVCWebApp.NguyenLPK.Controllers
         //    {
         //        return _context.ProjectReposNguyenLpks.Any(e => e.RepoId == id);
         //    }
+
 
 
 
