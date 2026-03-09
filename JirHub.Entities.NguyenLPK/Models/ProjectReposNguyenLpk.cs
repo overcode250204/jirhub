@@ -17,7 +17,7 @@ public partial class ProjectReposNguyenLpk
 
     public string RepoType { get; set; }
 
-    public bool? IsActive { get; set; }
+    public bool IsActive { get; set; }
 
     public virtual ICollection<GithubCommitsNguyenLpk> GithubCommitsNguyenLpks { get; set; } = new List<GithubCommitsNguyenLpk>();
 

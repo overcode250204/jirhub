@@ -19,10 +19,11 @@ namespace JirHub.MVCWebApp.NguyenLPK.Controllers
             _githubCommitService = githubCommitService;
         }
 
-        // GET: GithubCommitsNguyenLpks
         public async Task<IActionResult> Index(int repoId, string repoName)
         {
             var result = await _githubCommitService.SearchAsync(repoId, repoName);
+            ViewData["RepoName"] = repoName;
+            ViewData["RepoId"]   = repoId;
             return View(result);
         }
 

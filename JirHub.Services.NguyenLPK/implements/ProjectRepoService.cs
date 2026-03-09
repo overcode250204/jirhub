@@ -1,4 +1,4 @@
-﻿using JirHub.Entities.NguyenLPK.Models;
+using JirHub.Entities.NguyenLPK.Models;
 using JirHub.Repositories.NguyenLPK;
 using JirHub.Repositories.NguyenLPK.implements;
 using System;
@@ -51,7 +51,7 @@ namespace JirHub.Services.NguyenLPK.implements
 
         public Task<ProjectReposNguyenLpk> GetProjectRepoById(int repoId)
         {
-            throw new NotImplementedException();
+            return _projectRepoRepository.GetProjectRepoById(repoId);
         }
 
         public async Task<List<GithubPullRequestsNguyenLpk>> GetPrsByRepoId(int repoId)
@@ -61,7 +61,8 @@ namespace JirHub.Services.NguyenLPK.implements
 
         public Task<List<GithubPullRequestsNguyenLpk>> GetPrsByRepoId(int? repoId)
         {
-            throw new NotImplementedException();
+            if (!repoId.HasValue) return Task.FromResult(new List<GithubPullRequestsNguyenLpk>());
+            return GetPrsByRepoId(repoId.Value);
         }
 
         public async Task<List<ProjectReposNguyenLpk>> SearchProjectRepo(string nameRepo, string repoType, string groupName)
@@ -71,7 +72,22 @@ namespace JirHub.Services.NguyenLPK.implements
 
         public async Task<int> UpdateProjectRepoAsync(ProjectReposNguyenLpk entity)
         {
-            return await _projectRepoRepository.UpdateAsync(entity);
+            return await _projectRepoRepository.UpdateRepoAsync(entity);
+        }
+
+        public async Task<List<int>> GetLeaderGroupIdsAsync(int userId)
+        {
+            return await _projectRepoRepository.GetLeaderGroupIdsAsync(userId);
+        }
+
+        public async Task<List<int>> GetStudentGroupIdsAsync(int userId)
+        {
+            return await _projectRepoRepository.GetStudentGroupIdsAsync(userId);
+        }
+
+        public async Task<List<int>> GetLecturerGroupIdsAsync(int lecturerId)
+        {
+            return await _projectRepoRepository.GetLecturerGroupIdsAsync(lecturerId);
         }
     }
 }

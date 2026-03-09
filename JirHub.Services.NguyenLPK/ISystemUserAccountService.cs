@@ -9,6 +9,6 @@ namespace JirHub.Services.NguyenLPK
 {
     public interface ISystemUserAccountService
     {
-        Task<SystemUserAccount> GetUserAccountAsync(string username, string password);
+        Task<User> GetUserAccountAsync(string username, string password);
     }
 }

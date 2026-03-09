@@ -1,4 +1,4 @@
-﻿using JirHub.Entities.NguyenLPK.Models;
+using JirHub.Entities.NguyenLPK.Models;
 using JirHub.Services.NguyenLPK;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,8 +9,12 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+
 namespace JirHub.MVCWebApp.NguyenLPK.Controllers
 {
+    [Authorize]
     public class ProjectReposNguyenLpksController : Controller
     {
         private readonly IProjectRepoService _projectRepoService;
@@ -35,13 +39,45 @@ namespace JirHub.MVCWebApp.NguyenLPK.Controllers
         public async Task<IActionResult> Index(string repoName, string repoType, string groupName)
         {
             var result = await _projectRepoService.SearchProjectRepo(repoName, repoType, groupName);
-            ViewData["CurrentFilterName"] = repoName;
-            ViewData["CurrentFilterGroup"] = groupName;
+
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            List<int> leaderGroupIds = new List<int>();
+            List<int> allowedGroupIds = new List<int>();
+            if (int.TryParse(userIdStr, out int userId))
+            {
+                leaderGroupIds = await _projectRepoService.GetLeaderGroupIdsAsync(userId);
+
+                if (User.IsInRole("LECTURER")) allowedGroupIds = await _projectRepoService.GetLecturerGroupIdsAsync(userId);
+                else if (User.IsInRole("STUDENT")) allowedGroupIds = await _projectRepoService.GetStudentGroupIdsAsync(userId);
+            }
+            ViewBag.LeaderGroupIds = leaderGroupIds;
+
+            if (User.IsInRole("LECTURER") || User.IsInRole("STUDENT"))
+            {
+                result = result.Where(r => allowedGroupIds.Contains(r.GroupId)).ToList();
+            }
+
+            ViewData["CurrentFilterName"]     = repoName;
+            ViewData["CurrentFilterGroup"]    = groupName;
+            ViewData["CurrentFilterRepoType"] = repoType;
+
             return View(result);
         }
 
         public async Task<IActionResult> SyncGroup(int groupId)
         {
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            List<int> leaderGroupIds = new List<int>();
+            if (int.TryParse(userIdStr, out int userId))
+            {
+                leaderGroupIds = await _projectRepoService.GetLeaderGroupIdsAsync(userId);
+            }
+
+            if (!User.IsInRole("ADMIN") && !leaderGroupIds.Contains(groupId))
+            {
+                return Forbid();
+            }
+
             try
             {
                 bool isSuccess = await _githubService.SyncGroupDataAsync(groupId);
@@ -64,30 +100,55 @@ namespace JirHub.MVCWebApp.NguyenLPK.Controllers
         // GET: ProjectReposNguyenLpks/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            if (id == null) return NotFound();
+
+            var repo = await _projectRepoService.GetProjectRepoById(id);
+            if (repo == null) return NotFound();
+
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            List<int> allowedGroupIds = new List<int>();
+            List<int> leaderGroupIds = new List<int>();
+
+            if (int.TryParse(userIdStr, out int userId))
             {
-                return NotFound();
+                leaderGroupIds = await _projectRepoService.GetLeaderGroupIdsAsync(userId);
+
+                if (User.IsInRole("LECTURER")) allowedGroupIds = await _projectRepoService.GetLecturerGroupIdsAsync(userId);
+                else if (User.IsInRole("STUDENT")) allowedGroupIds = await _projectRepoService.GetStudentGroupIdsAsync(userId);
             }
 
-            //var projectReposNguyenLpk = await _context.ProjectReposNguyenLpks
-            //    .Include(p => p.Group)
-            //    .FirstOrDefaultAsync(m => m.RepoId == id);
-
-            var projectReposNguyenLpk = await _projectRepoService.GetPrsByRepoId(id);
-            if (projectReposNguyenLpk == null)
+            
+            if ((User.IsInRole("LECTURER") || User.IsInRole("STUDENT")) && !allowedGroupIds.Contains(repo.GroupId))
             {
-                return NotFound();
+                return Forbid();
             }
 
-            return View(projectReposNguyenLpk);
+            if (!User.IsInRole("ADMIN") && !repo.IsActive && !leaderGroupIds.Contains(repo.GroupId))
+            {
+                return Forbid();
+            }
+
+            return View(repo);
         }
 
 
         // GET: ProjectReposNguyenLpks/Create
         public async Task<IActionResult> Create()
         {
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            List<int> leaderGroupIds = new List<int>();
+            if (int.TryParse(userIdStr, out int userId))
+            {
+                leaderGroupIds = await _projectRepoService.GetLeaderGroupIdsAsync(userId);
+            }
 
-            ViewData["GroupId"] = new SelectList(await _classGroupService.GetAllClassGroupAsync(), "GroupId", "GroupName");
+            var allGroups = await _classGroupService.GetAllClassGroupAsync();
+            if (!User.IsInRole("ADMIN"))
+            {
+                allGroups = allGroups.Where(g => leaderGroupIds.Contains(g.GroupId)).ToList();
+            }
+
+            ViewData["GroupId"] = new SelectList(allGroups, "GroupId", "GroupName");
             return View();
         }
 
@@ -98,6 +159,18 @@ namespace JirHub.MVCWebApp.NguyenLPK.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProjectReposNguyenLpk projectReposNguyenLpk)
         {
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            List<int> leaderGroupIds = new List<int>();
+            if (int.TryParse(userIdStr, out int userId))
+            {
+                leaderGroupIds = await _projectRepoService.GetLeaderGroupIdsAsync(userId);
+            }
+
+            if (!User.IsInRole("ADMIN") && !leaderGroupIds.Contains(projectReposNguyenLpk.GroupId))
+            {
+                return Forbid();
+            }
+
             if (ModelState.IsValid)
             {
                 //_context.Add(projectReposNguyenLpk);
@@ -133,21 +206,38 @@ namespace JirHub.MVCWebApp.NguyenLPK.Controllers
                 return NotFound();
             }
 
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            List<int> leaderGroupIds = new List<int>();
+            if (int.TryParse(userIdStr, out int userId))
+            {
+                leaderGroupIds = await _projectRepoService.GetLeaderGroupIdsAsync(userId);
+            }
 
+            if (!User.IsInRole("ADMIN") && !leaderGroupIds.Contains(projectReposNguyenLpk.GroupId))
+            {
+                return Forbid();
+            }
+
+            ViewData["GroupId"] = new SelectList(await _classGroupService.GetAllClassGroupAsync(), "GroupId", "GroupName", projectReposNguyenLpk.GroupId);
             return View(projectReposNguyenLpk);
         }
 
         // POST: ProjectReposNguyenLpks/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(ProjectReposNguyenLpk projectReposNguyenLpk)
         {
-            //if (id != projectReposNguyenLpk.RepoId)
-            //{
-            //    return NotFound();
-            //}
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            List<int> leaderGroupIds = new List<int>();
+            if (int.TryParse(userIdStr, out int userId))
+            {
+                leaderGroupIds = await _projectRepoService.GetLeaderGroupIdsAsync(userId);
+            }
+
+            if (!User.IsInRole("ADMIN") && !leaderGroupIds.Contains(projectReposNguyenLpk.GroupId))
+            {
+                return Forbid();
+            }
 
             if (ModelState.IsValid)
             {
@@ -156,73 +246,78 @@ namespace JirHub.MVCWebApp.NguyenLPK.Controllers
                     var result = await _projectRepoService.UpdateProjectRepoAsync(projectReposNguyenLpk);
                     if (result > 0)
                     {
+                        TempData["SuccessMessage"] = "Cập nhật repo thành công!";
                         return RedirectToAction(nameof(Index));
                     }
+                    ModelState.AddModelError("", "Không tìm thấy repo để cập nhật.");
                 }
                 catch (Exception ex)
                 {
-                    //if (!ProjectReposNguyenLpkExists(projectReposNguyenLpk.RepoId))
-                    //{
-                    //    return NotFound();
-                    //}
-                    //else
-                    //{
-                    //    throw;
-                    //}
-                    Console.WriteLine(ex.ToString());
-                    throw new Exception(ex.Message);
+                    ModelState.AddModelError("", "Lỗi khi lưu: " + ex.Message);
                 }
-                
             }
-            ViewBag.Groups = new SelectList(
-                await _projectRepoService.GetAllAsync(),
-                "GroupId",
-                "GroupName",
-                projectReposNguyenLpk.GroupId
-            );
 
+            ViewData["GroupId"] = new SelectList(await _classGroupService.GetAllClassGroupAsync(), "GroupId", "GroupName", projectReposNguyenLpk.GroupId);
             return View(projectReposNguyenLpk);
         }
 
-        // GET: ProjectReposNguyenLpks/Delete/5
+
+        // GET: ProjectReposNguyenLpks/Delete/5 — hiển thị trang confirm trước khi xóa
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            if (id == null) return NotFound();
+
+            var repo = await _projectRepoService.GetProjectRepoById(id);
+            if (repo == null) return NotFound();
+
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            List<int> leaderGroupIds = new List<int>();
+            if (int.TryParse(userIdStr, out int userId))
             {
-                return NotFound();
+                leaderGroupIds = await _projectRepoService.GetLeaderGroupIdsAsync(userId);
             }
 
-            //var projectReposNguyenLpk = await _context.ProjectReposNguyenLpks
-            //    .Include(p => p.Group)
-            //    .FirstOrDefaultAsync(m => m.RepoId == id);
-            var projectReposNguyenLpk = await _projectRepoService.DeleteProjectRepoAsync(id);
-            if (projectReposNguyenLpk)
+            if (!User.IsInRole("ADMIN") && !leaderGroupIds.Contains(repo.GroupId))
             {
-                return RedirectToAction(nameof(Index));
+                return Forbid();
             }
 
-            return RedirectToAction(nameof(Delete), new {id = id});
+            return View(repo);
         }
 
-        //    // POST: ProjectReposNguyenLpks/Delete/5
-        //    [HttpPost, ActionName("Delete")]
-        //    [ValidateAntiForgeryToken]
-        //    public async Task<IActionResult> DeleteConfirmed(int id)
-        //    {
-        //        var projectReposNguyenLpk = await _context.ProjectReposNguyenLpks.FindAsync(id);
-        //        if (projectReposNguyenLpk != null)
-        //        {
-        //            _context.ProjectReposNguyenLpks.Remove(projectReposNguyenLpk);
-        //        }
+        // POST: ProjectReposNguyenLpks/Delete/5 — thực sự xóa sau khi user confirm
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var repo = await _projectRepoService.GetProjectRepoById(id);
+            if (repo == null) return NotFound();
 
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Index));
-        //    }
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            List<int> leaderGroupIds = new List<int>();
+            if (int.TryParse(userIdStr, out int userId))
+            {
+                leaderGroupIds = await _projectRepoService.GetLeaderGroupIdsAsync(userId);
+            }
 
-        //    private bool ProjectReposNguyenLpkExists(int id)
-        //    {
-        //        return _context.ProjectReposNguyenLpks.Any(e => e.RepoId == id);
-        //    }
+            if (!User.IsInRole("ADMIN") && !leaderGroupIds.Contains(repo.GroupId))
+            {
+                return Forbid();
+            }
+
+            try
+            {
+                var result = await _projectRepoService.DeleteProjectRepoAsync(id);
+                TempData[result ? "SuccessMessage" : "ErrorMessage"] =
+                    result ? "Đã xóa repository thành công!" : "Không tìm thấy repository để xóa.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Lỗi khi xóa: " + ex.Message;
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
 
 
 

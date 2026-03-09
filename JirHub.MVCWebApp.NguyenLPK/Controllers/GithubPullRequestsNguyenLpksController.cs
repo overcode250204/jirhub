@@ -23,6 +23,8 @@ namespace JirHub.MVCWebApp.NguyenLPK.Controllers
         public async Task<IActionResult> Index(int repoId, string repoName)
         {
             List<GithubPullRequestsNguyenLpk> prs = await _githubPrService.SearchAsync(repoId, repoName);
+            ViewData["RepoName"] = repoName;
+            ViewData["RepoId"]   = repoId;
             return View(prs);
         }
 

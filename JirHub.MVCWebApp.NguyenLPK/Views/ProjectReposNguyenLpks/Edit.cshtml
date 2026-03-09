@@ -1,51 +1,93 @@
 ﻿@model JirHub.Entities.NguyenLPK.Models.ProjectReposNguyenLpk
+@using Microsoft.AspNetCore.Mvc.Rendering
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Chỉnh sửa Repository";
+    var groupItems = ViewData["GroupId"] as IEnumerable<SelectListItem>;
 }
 
-<h1>Edit</h1>
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h2><i class="fa fa-pen-to-square me-2"></i>Chỉnh sửa Repository</h2>
+        <p>Cập nhật thông tin repository trong nhóm</p>
+    </div>
+    <a asp-action="Index" class="btn btn-light">
+        <i class="fa fa-arrow-left me-1"></i> Quay lại
+    </a>
+</div>
 
-<h4>ProjectReposNguyenLpk</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="RepoId" readonly/>
-            <div class="form-group">
-                <label asp-for="GroupId" class="control-label"></label>
-                <select asp-for="GroupId" class="form-control" asp-items="ViewBag.GroupId"></select>
-                <span asp-validation-for="GroupId" class="text-danger"></span>
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <i class="fa fa-pen me-2"></i>Thông tin Repository — ID: @Model.RepoId
             </div>
-            <div class="form-group">
-                <label asp-for="RepoName" class="control-label"></label>
-                <input asp-for="RepoName" class="form-control" />
-                <span asp-validation-for="RepoName" class="text-danger"></span>
+            <div class="card-body p-4">
+                <form asp-action="Edit">
+                    <input type="hidden" asp-for="RepoId" />
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger py-2">
+                            <div asp-validation-summary="ModelOnly"></div>
+                        </div>
+                    }
+
+                    <div class="mb-3">
+                        <label asp-for="GroupId" class="form-label fw-semibold">
+                            <i class="fa fa-users text-warning me-1"></i>Nhóm
+                        </label>
+                        <select asp-for="GroupId" class="form-select" asp-items="groupItems">
+                            <option value="">-- Chọn nhóm --</option>
+                        </select>
+                        <span asp-validation-for="GroupId" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="RepoName" class="form-label fw-semibold">
+                            <i class="fa fa-code-branch text-warning me-1"></i>Tên Repository
+                        </label>
+                        <input asp-for="RepoName" class="form-control" />
+                        <span asp-validation-for="RepoName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="RepoUrl" class="form-label fw-semibold">
+                            <i class="fa fa-link text-warning me-1"></i>URL GitHub
+                        </label>
+                        <input asp-for="RepoUrl" class="form-control" />
+                        <span asp-validation-for="RepoUrl" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="RepoType" class="form-label fw-semibold">
+                            <i class="fa fa-layer-group text-warning me-1"></i>Loại Repository
+                        </label>
+                        <select asp-for="RepoType" class="form-select">
+                            <option value="">-- Chọn loại --</option>
+                            <option value="BACKEND">Backend</option>
+                            <option value="FRONTEND">Frontend</option>
+                            <option value="MOBILE">Mobile</option>
+                            <option value="FULLSTACK">Fullstack</option>
+                        </select>
+                        <span asp-validation-for="RepoType" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="form-check form-switch">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                            <label asp-for="IsActive" class="form-check-label fw-semibold">Kích hoạt (cho phép Sync)</label>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-warning flex-grow-1">
+                            <i class="fa fa-floppy-disk me-1"></i> Lưu thay đổi
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">Hủy</a>
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <label asp-for="RepoUrl" class="control-label"></label>
-                <input asp-for="RepoUrl" class="form-control" />
-                <span asp-validation-for="RepoUrl" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="RepoType" class="control-label"></label>
-                <input asp-for="RepoType" class="form-control" />
-                <span asp-validation-for="RepoType" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IsActive" class="control-label"></label>
-                <input asp-for="IsActive" class="form-control" />
-                <span asp-validation-for="IsActive" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-

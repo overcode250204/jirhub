@@ -2,6 +2,5 @@
 {
     public class HomeModel
     {
-        public string Message = "CONCAC";
     }
 }
