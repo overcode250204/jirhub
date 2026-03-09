@@ -28,12 +28,21 @@ namespace JirHub.Repositories.NguyenLPK.implements
 
         public async Task<GithubCommitsNguyenLpk> GetCommitByIdAsync(long? id)
         {
-            return await _context.GithubCommitsNguyenLpks.Include(c => c.MappedMember).Include(c => c.Repo).FirstOrDefaultAsync(c => c.RepoId == id);
+            // Bug fix: phải lọc theo CommitId, không phải RepoId
+            return await _context.GithubCommitsNguyenLpks
+                .Include(c => c.MappedMember)
+                .Include(c => c.Repo)
+                .FirstOrDefaultAsync(c => c.CommitId == id);
         }
 
         public async Task<List<GithubCommitsNguyenLpk>> SearchAsync(int repoId, string repoName)
         {
-            return await _context.GithubCommitsNguyenLpks.Include(c => c.MappedMember).Where(c => c.RepoId == repoId || c.Repo.RepoName == repoName).OrderByDescending(c => c.CommittedDate).ToListAsync();
+            return await _context.GithubCommitsNguyenLpks
+                .Include(c => c.MappedMember)
+                .Include(c => c.Repo)
+                .Where(c => c.RepoId == repoId || c.Repo.RepoName == repoName)
+                .OrderByDescending(c => c.CommittedDate)
+                .ToListAsync();
         }
     }
 }

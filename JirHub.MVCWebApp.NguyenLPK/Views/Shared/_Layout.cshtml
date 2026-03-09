@@ -1,12 +1,31 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - JirHub.MVCWebApp.NguyenLPK</title>
+    <title>@ViewData["Title"] - JirHub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/JirHub.MVCWebApp.NguyenLPK.styles.css" asp-append-version="true" />
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f4f6fb; }
+        .navbar { background: linear-gradient(135deg, #1e3a5f, #2563eb) !important; box-shadow: 0 2px 12px rgba(37,99,235,.3); }
+        .navbar-brand, .nav-link { color: #fff !important; font-weight: 600; }
+        .nav-link:hover { color: #bfdbfe !important; }
+        .card { border: none; border-radius: 12px; box-shadow: 0 2px 16px rgba(0,0,0,.07); }
+        .card-header { border-radius: 12px 12px 0 0 !important; font-weight: 600; }
+        .btn { border-radius: 8px; font-weight: 500; }
+        .table thead th { font-size: .8rem; text-transform: uppercase; letter-spacing: .5px; }
+        .badge { border-radius: 6px; font-weight: 500; padding: .35em .65em; }
+        .form-control, .form-select { border-radius: 8px; border: 1.5px solid #e2e8f0; transition: border-color .2s; }
+        .form-control:focus, .form-select:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.15); }
+        .page-header { background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%); color: #fff; border-radius: 14px; padding: 1.5rem 2rem; margin-bottom: 1.5rem; }
+        .page-header h2 { margin: 0; font-weight: 700; }
+        .page-header p { margin: .25rem 0 0; opacity: .85; font-size: .9rem; }
+    </style>
 </head>
 <body>
     <header>
@@ -29,11 +48,32 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="ProjectReposNguyenLpks" asp-action="Index">Project Repo</a>
                         </li>
+                    </ul>
+                    <ul class="navbar-nav">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            var roleText = User.IsInRole("ADMIN") ? "Admin" : 
+                                          User.IsInRole("LECTURER") ? "Lecturer" : 
+                                          User.IsInRole("STUDENT") ? "Student" : "User";
+                            <li class="nav-item">
+                                <span class="nav-link" style="opacity: 0.9;">Xin chào, <strong>@Context.Request.Cookies["UserName"]</strong> (@roleText)</span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Logout" style="cursor: pointer;">
+                                    <i class="fa fa-sign-out-alt me-1"></i>Đăng xuất
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Login">
+                                    <i class="fa fa-sign-in-alt me-1"></i>Đăng nhập
+                                </a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>

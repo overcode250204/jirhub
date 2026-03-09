@@ -1,4 +1,4 @@
-﻿using JirHub.Entities.NguyenLPK.Models;
+using JirHub.Entities.NguyenLPK.Models;
 using JirHub.Repositories.NguyenLPK;
 using JirHub.Repositories.NguyenLPK.implements;
 using JirHub.Services.NguyenLPK.utils;
@@ -127,6 +127,7 @@ namespace JirHub.Services.NguyenLPK.implements
         public async Task<bool> SyncGroupDataAsync(int groupId)
         {
             bool result = false;
+            
             try
             {
                 ProjectConfig projectConfig = await _projectConfigRepository.GetProjectConfigByGroupIdAsync(groupId);
@@ -224,7 +225,7 @@ namespace JirHub.Services.NguyenLPK.implements
                     existingPullRequest.MappedMemberId = member.MemberId;
                 }
 
-                Match jiraMapping = Regex.Match(existingPullRequest.Title, @"([A-Z]+-\d+)", RegexOptions.IgnoreCase);
+                Match jiraMapping = Regex.Match(existingPullRequest.Title ?? "", @"([A-Z]+-\d+)", RegexOptions.IgnoreCase);
                 if (jiraMapping.Success)
                 {
                     existingPullRequest.LinkedIssueKey = jiraMapping.Value.ToUpper();
@@ -286,7 +287,7 @@ namespace JirHub.Services.NguyenLPK.implements
                     var member = members.FirstOrDefault(m => m.GithubUsername == newCommit.AuthorGithubUsername);
                     if (member != null) newCommit.MappedMemberId = member.MemberId;
 
-                    var jiraMatch = Regex.Match(newCommit.Message, @"([A-Z]+-\d+)", RegexOptions.IgnoreCase);
+                    var jiraMatch = Regex.Match(newCommit.Message ?? "", @"([A-Z]+-\d+)", RegexOptions.IgnoreCase);
                     if (jiraMatch.Success)
                     {
                         newCommit.LinkedIssueKey = jiraMatch.Value.ToUpper();
@@ -339,7 +340,7 @@ namespace JirHub.Services.NguyenLPK.implements
                     return result;
                 }
 
-                var groupMembers = await _projectRepoRepository.GetGroupMembersByGroupIdAsync(repo.RepoId);
+                var groupMembers = await _projectRepoRepository.GetGroupMembersByGroupIdAsync(repo.GroupId);
 
                 var client = new GitHubClient(new ProductHeaderValue("JirHub"));
 

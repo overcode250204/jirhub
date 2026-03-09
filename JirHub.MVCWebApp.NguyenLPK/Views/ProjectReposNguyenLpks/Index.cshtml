@@ -1,80 +1,444 @@
-﻿@model IEnumerable<JirHub.Entities.NguyenLPK.Models.ProjectReposNguyenLpk>
+@model IEnumerable<JirHub.Entities.NguyenLPK.Models.ProjectReposNguyenLpk>
+@using Microsoft.AspNetCore.Mvc.Rendering
 
-<h2>Quản lý Source Code (FN-10 & FN-11)</h2>
+@{
+    var currentGroup = ViewData["CurrentFilterGroup"]?.ToString();
+    var currentType  = ViewData["CurrentFilterRepoType"]?.ToString();
+    var currentName  = ViewData["CurrentFilterName"]?.ToString();
+
+    string[] repoTypes  = { "FRONTEND", "BACKEND", "MOBILE" };
+    string[] repoLabels = { "Frontend", "Backend", "Mobile" };
+}
+
+<style>
+    /* ── Page header ── */
+    .page-header-card {
+        background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+        border-radius: 16px;
+        padding: 28px 32px;
+        margin-bottom: 28px;
+        color: #fff;
+        box-shadow: 0 8px 24px rgba(37,99,235,.35);
+    }
+    .page-header-card h2 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin: 0 0 4px;
+        letter-spacing: .3px;
+    }
+    .page-header-card p  { margin: 0; opacity: .8; font-size: .9rem; }
+
+    /* ── Filter card ── */
+    .filter-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 22px 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.06);
+    }
+    .filter-card .filter-title {
+        font-size: .78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .8px;
+        color: #64748b;
+        margin-bottom: 14px;
+    }
+    .filter-card .form-control,
+    .filter-card .form-select {
+        border-radius: 8px;
+        border: 1.5px solid #cbd5e1;
+        font-size: .88rem;
+        height: 40px;
+        transition: border-color .2s, box-shadow .2s;
+    }
+    .filter-card .form-control:focus,
+    .filter-card .form-select:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37,99,235,.15);
+    }
+    .filter-card .form-label {
+        font-size: .8rem;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 5px;
+    }
+    .btn-search {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        border: none;
+        border-radius: 8px;
+        color: #fff;
+        font-weight: 600;
+        font-size: .88rem;
+        height: 40px;
+        padding: 0 20px;
+        transition: opacity .2s, transform .15s;
+    }
+    .btn-search:hover  { opacity: .9; transform: translateY(-1px); color: #fff; }
+    .btn-reset {
+        border-radius: 8px;
+        height: 40px;
+        font-size: .88rem;
+        font-weight: 600;
+        padding: 0 16px;
+    }
+
+    /* ── Table ── */
+    .repo-table-wrapper {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(0,0,0,.06);
+    }
+    .repo-table-wrapper table {
+        margin: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    .repo-table-wrapper thead th {
+        background: #1e293b;
+        color: #e2e8f0;
+        font-size: .78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .7px;
+        padding: 14px 16px;
+        border: none;
+    }
+    .repo-table-wrapper tbody tr {
+        transition: background .15s;
+    }
+    .repo-table-wrapper tbody tr:hover { background: #f8fafc; }
+    .repo-table-wrapper tbody td {
+        padding: 13px 16px;
+        vertical-align: middle;
+        font-size: .88rem;
+        color: #334155;
+        border-bottom: 1px solid #f1f5f9;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+    }
+    /* ── Group Header specific styling ── */
+    .repo-table-wrapper tbody tr.table-group-header {
+        background-color: #f8fafc !important;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .repo-table-wrapper tbody tr.table-group-header td {
+        border-top: 2px solid #e2e8f0;
+        border-bottom: 2px solid #e2e8f0;
+        padding-top: 16px;
+        padding-bottom: 16px;
+    }
+
+    /* ── Group pill ── */
+    .group-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #f1f5f9;
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-size: .8rem;
+        font-weight: 600;
+        color: #475569;
+    }
+    .group-pill i { color: #94a3b8; font-size: .75rem; }
+
+    /* ── Repo name ── */
+    .repo-name {
+        font-weight: 600;
+        color: #1e293b;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .repo-name i { color: #2563eb; }
+
+    /* ── Type badges ── */
+    .badge-type {
+        display: inline-block;
+        border-radius: 6px;
+        padding: 4px 10px;
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: .5px;
+        text-transform: uppercase;
+    }
+    .badge-frontend { background: #dbeafe; color: #1d4ed8; }
+    .badge-backend  { background: #dcfce7; color: #15803d; }
+    .badge-mobile   { background: #fef9c3; color: #854d0e; }
+    .badge-other    { background: #f1f5f9; color: #475569; }
+
+    /* ── GitHub link ── */
+    .gh-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: #2563eb;
+        text-decoration: none;
+        font-size: .83rem;
+        font-weight: 500;
+        transition: color .15s;
+    }
+    .gh-link:hover { color: #1d4ed8; text-decoration: underline; }
+    .gh-link i { font-size: .85rem; }
+
+    /* ── Action buttons ── */
+    .action-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    .action-group .btn {
+        border-radius: 7px;
+        font-size: .78rem;
+        padding: 4px 10px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: transform .12s, box-shadow .12s;
+    }
+    .action-group .btn:hover { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(0,0,0,.12); }
+
+    /* ── Empty state ── */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #94a3b8;
+    }
+    .empty-state i { font-size: 3rem; margin-bottom: 12px; display: block; }
+    .empty-state p { font-size: .95rem; }
+
+    /* ── Alerts ── */
+    .alert { border-radius: 10px; font-size: .88rem; }
+
+    /* ── Pagination ── */
+    #pagination-container { margin-top: 16px; }
+</style>
 
 @if (TempData["SuccessMessage"] != null)
 {
-    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fa fa-circle-check me-2"></i>@TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
 }
 @if (TempData["ErrorMessage"] != null)
 {
-    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fa fa-circle-xmark me-2"></i>@TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
 }
 
-<p>
-    <a asp-action="Create" class="btn btn-success">+ Thêm Repo Mới</a>
-</p>
-
-<form asp-action="Index" method="GET" class="mb-3">
-    <div class="row">
-        <div class="col-md-3">
-            <input type="text" name="repoName" class="form-control" placeholder="Tên Repo..." value="@ViewData["CurrentFilterName"]" />
-        </div>
-        <div class="col-md-3">
-            <input type="text" name="groupName" class="form-control" placeholder="Tên Nhóm..." value="@ViewData["CurrentFilterGroup"]" />
-        </div>
-        <div class="col-md-3">
-            <select name="repoType" class="form-control">
-                <option value="">-- Tất cả các loại --</option>
-                <option value="FRONTEND" selected="@(ViewData["CurrentFilterRepoType"]?.ToString() == "FRONTEND")">Frontend</option>
-                <option value="BACKEND" selected="@(ViewData["CurrentFilterRepoType"]?.ToString() == "BACKEND")">Backend</option>
-                <option value="MOBILE" selected="@(ViewData["CurrentFilterRepoType"]?.ToString() == "MOBILE")">Mobile</option>
-            </select>
-        </div>
-        <div class="col-md-2">
-            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
-        </div>
+<!-- Page header -->
+<div class="page-header-card d-flex align-items-center justify-content-between flex-wrap gap-3">
+    <div>
+        <h2><i class="fab fa-github me-2"></i>Quản lý Source Code</h2>
+        <p>FN-10 &amp; FN-11 · Quản lý các repository và đồng bộ từ GitHub</p>
     </div>
-</form>
+    @if ((ViewBag.LeaderGroupIds as List<int>)?.Any() == true)
+    {
+        <a asp-action="Create" class="btn btn-light fw-bold px-4 py-2" style="border-radius:10px;">
+            <i class="fa fa-plus me-1 text-primary"></i> Thêm Repo Mới
+        </a>
+    }
+</div>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Group ID</th>
-            <th>Tên Repo</th>
-            <th>Loại</th>
-            <th>URL</th>
-            <th>Thao tác</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+<!-- Filter -->
+<div class="filter-card">
+    <div class="filter-title"><i class="fa fa-filter me-1"></i> Bộ lọc tìm kiếm</div>
+    <form asp-action="Index" method="GET">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label">Nhóm</label>
+                <input type="text" name="groupName" class="form-control"
+                       placeholder="Gõ tên nhóm để tìm..."
+                       value="@currentGroup"
+                       autocomplete="off" />
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Tên Repo</label>
+                <input type="text" name="repoName" class="form-control"
+                       placeholder="Tìm theo tên repo..." value="@currentName" />
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Loại Repo</label>
+                <select name="repoType" class="form-select">
+                    <option value="">-- Tất cả các loại --</option>
+                    @for (int i = 0; i < repoTypes.Length; i++)
+                    {
+                        if (repoTypes[i] == currentType)
+                        {
+                            <option value="@repoTypes[i]" selected="selected">@repoLabels[i]</option>
+                        }
+                        else
+                        {
+                            <option value="@repoTypes[i]">@repoLabels[i]</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-search flex-fill">
+                    <i class="fa fa-search me-1"></i> Tìm kiếm
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary btn-reset">
+                    <i class="fa fa-rotate-left"></i>
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="repo-table-wrapper">
+    <table id="repoTable" class="table table-hover mb-0">
+        <thead>
             <tr>
-                <td>@item.GroupId</td>
-                <td>@item.RepoName</td>
-                <td><span class="badge bg-info">@item.RepoType</span></td>
-                <td><a href="@item.RepoUrl" target="_blank">Link GitHub</a></td>
-                <td>
-                    <a asp-controller="GithubCommitsNguyenLpks" asp-action="Index" asp-route-repoId="@item.RepoId" class="btn btn-sm btn-outline-secondary">
-                        Commits
-                    </a>
-
-                    <a asp-controller="GithubPullRequestsNguyenLpks" asp-action="Index" asp-route-repoId="@item.RepoId" class="btn btn-sm btn-outline-secondary">
-                        PRs
-                    </a>
-
-                    <a asp-action="Edit" asp-route-id="@item.RepoId" class="btn btn-sm btn-warning">Sửa</a>
-                    <a asp-action="Delete" asp-route-id="@item.RepoId" class="btn btn-sm btn-danger">Xóa</a>
-
-                    <form asp-action="SyncGroup" method="post" style="display:inline;">
-                        <input type="hidden" name="groupId" value="@item.GroupId" />
-                        <button type="submit" class="btn btn-sm btn-primary" title="Sync from GitHub">
-                            Sync
-                        </button>
-                    </form>
-                </td>
+                <th><i class="fa fa-code-branch me-1"></i> Tên Repo</th>
+                <th><i class="fa fa-tag me-1"></i> Loại</th>
+                <th><i class="fab fa-github me-1"></i> URL</th>
+                <th style="min-width:260px;"><i class="fa fa-wrench me-1"></i> Thao tác</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="4">
+                        <div class="empty-state">
+                            <i class="fab fa-github"></i>
+                            <p>Không tìm thấy repository nào phù hợp.</p>
+                        </div>
+                    </td>
+                </tr>
+            }
+            else
+            {
+                var groupedRepos = Model.GroupBy(x => new { x.GroupId, GroupName = x.Group?.GroupName ?? $"Group #{x.GroupId}" });
+                foreach (var group in groupedRepos)
+                {
+                    <tr class="table-group-header" style="background-color: #f1f5f9;">
+                        @{
+                            var leaderGroupIds = ViewBag.LeaderGroupIds as List<int> ?? new List<int>();
+                            var isLeader = leaderGroupIds.Contains(group.Key.GroupId);
+                        }
+                        <td colspan="3">
+                            <strong style="color: #1e293b; font-size: 1rem;"><i class="fa fa-users me-2 text-primary"></i>@group.Key.GroupName</strong>
+                            <span class="badge bg-secondary ms-2" style="font-size: 0.75rem;">@group.Count() repos</span>
+                            
+                            @if (User.IsInRole("ADMIN"))
+                            {
+                                <span class="badge bg-danger ms-2" style="font-size: 0.75rem;"><i class="fa fa-user-shield me-1"></i> Admin</span>
+                            }
+                            else if (User.IsInRole("LECTURER"))
+                            {
+                                
+                            }
+                            else if (isLeader)
+                            {
+                                <span class="badge bg-success ms-2" style="font-size: 0.75rem;"><i class="fa fa-star me-1"></i> Trưởng nhóm</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-info text-dark ms-2" style="font-size: 0.75rem;"><i class="fa fa-user me-1"></i> Thành viên</span>
+                            }
+                        </td>
+                        <td class="text-end">
+                            @if (User.IsInRole("ADMIN") || isLeader)
+                            {
+                                <form asp-action="SyncGroup" method="post" style="display:inline;">
+                                    <input type="hidden" name="groupId" value="@group.Key.GroupId" />
+                                    <button type="submit" class="btn btn-sm btn-primary" title="Đồng bộ tự động tất cả Repo của Nhóm @group.Key.GroupName">
+                                        <i class="fab fa-github me-1"></i> Sync Tất Cả Repo Nhóm Này
+                                    </button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                    
+                    @foreach (var item in group)
+                    {
+                        string typeLower = (item.RepoType ?? "").ToLower();
+                        string badgeCss = typeLower switch {
+                            "frontend" => "badge-frontend",
+                            "backend"  => "badge-backend",
+                            "mobile"   => "badge-mobile",
+                            _          => "badge-other"
+                        };
+
+                        <tr>
+                            <td style="padding-left: 20px;">
+                                <span class="repo-name d-flex align-items-center">
+                                    <i class="fa fa-turn-up fa-rotate-90 me-2 text-muted" style="font-size: 0.85rem;"></i>
+                                    <i class="fa fa-code-branch me-1"></i>
+                                    @item.RepoName
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge-type @badgeCss">@item.RepoType</span>
+                            </td>
+                            <td>
+                                <a href="@item.RepoUrl" target="_blank" class="gh-link">
+                                    <i class="fab fa-github"></i> Link GitHub
+                                    <i class="fa fa-arrow-up-right-from-square" style="font-size:.7rem;"></i>
+                                </a>
+                            </td>
+                            <td>
+                                <div class="action-group">
+                                    <a asp-action="Details" asp-route-id="@item.RepoId"
+                                       class="btn btn-sm btn-outline-primary" title="Xem chi tiết">
+                                        <i class="fa fa-eye"></i> Chi tiết
+                                    </a>
+                                    <a asp-controller="GithubCommitsNguyenLpks" asp-action="Index"
+                                       asp-route-repoId="@item.RepoId"
+                                       asp-route-repoName="@item.RepoName"
+                                       class="btn btn-sm btn-outline-secondary" title="Xem Commits">
+                                        <i class="fa fa-code-commit"></i> Commits
+                                    </a>
+                                    <a asp-controller="GithubPullRequestsNguyenLpks" asp-action="Index"
+                                       asp-route-repoId="@item.RepoId"
+                                       asp-route-repoName="@item.RepoName"
+                                       class="btn btn-sm btn-outline-secondary" title="Xem Pull Requests">
+                                        <i class="fa fa-code-pull-request"></i> PRs
+                                    </a>
+                                    
+                                    @if (User.IsInRole("ADMIN") || isLeader)
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@item.RepoId"
+                                           class="btn btn-sm btn-warning" title="Chỉnh sửa">
+                                            <i class="fa fa-pen"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.RepoId"
+                                           class="btn btn-sm btn-danger" title="Xoá">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+<div id="pagination-container" class="mt-3"></div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/lib/paginathing.js    "></script>
+    <script>
+        $(document).ready(function () {
+            $('#repoTable tbody').paginathing({ perPage: 5 });
+        });
+    </script>
+}

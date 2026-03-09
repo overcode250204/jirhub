@@ -9,63 +9,145 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - JirHub.MVCWebApp.NguyenLPK</title>
+    <title>Đăng nhập - JirHub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/zPayment.MVCWebApp.FE.VuLNS.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f4f6fb 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+        .login-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            width: 100%;
+            max-width: 450px;
+            padding: 3rem 2.5rem;
+            transition: transform 0.3s ease;
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        .login-header h2 {
+            font-weight: 700;
+            color: #1e3a5f;
+            margin-bottom: 0.5rem;
+        }
+        .login-header p {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+        .form-control {
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            border: 1.5px solid #e2e8f0;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        .form-control:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+        .form-label {
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+            width: 100%;
+            margin-top: 1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
+        }
+        .input-group-text {
+            background: transparent;
+            border: 1.5px solid #e2e8f0;
+            border-right: none;
+            color: #94a3b8;
+        }
+        .form-control.with-icon {
+            border-left: none;
+        }
+        .form-control.with-icon:focus {
+            box-shadow: inset 0 0 0 9999px transparent; /* Prevent overlap with icon border focus */
+        }
+        .input-group:focus-within .input-group-text,
+        .input-group:focus-within .form-control {
+            border-color: #2563eb;
+        }
+        .input-group:focus-within {
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+            border-radius: 10px;
+        }
+        .text-danger {
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: block;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">JirHub.MVCWebApp.NguyenLPK - <span class="text-danger">PRN222</span></a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+    <div class="login-card">
+        <div class="login-header">
+            <div class="mb-3">
+                <i class="fa-solid fa-layer-group" style="font-size: 3rem; color: #2563eb;"></i>
             </div>
-        </nav>
-    </header>
+            <h2>Chào mừng trở lại</h2>
+            <p>Đăng nhập vào hệ thống quản lý JirHub</p>
+        </div>
 
-    <div class="container">
-        <main role="main" class="pb-3">
-            <div class="row text-center">
-                <h1 class="display-4">Login</h1>
+        <form asp-action="Login">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" style="border-radius: 10px; font-size: 0.9rem;"></div>
+            
+            <div class="mb-4">
+                <label asp-for="UserName" class="form-label">Tên đăng nhập</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fa-regular fa-user"></i></span>
+                    <input asp-for="UserName" class="form-control with-icon" placeholder="Nhập tên đăng nhập..." />
+                </div>
+                <span asp-validation-for="UserName" class="text-danger"></span>
             </div>
-            <div class="row">
-                <div class="col-md-4">
+
+            <div class="mb-4">
+                <label asp-for="Password" class="form-label">Mật khẩu</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                    <input type="password" asp-for="Password" class="form-control with-icon" placeholder="••••••••" />
                 </div>
-                <div class="col-md-4">
-                    <form asp-action="Login">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        <div class="form-group">
-                            <label asp-for="UserName" class="control-label"></label>
-                            <input asp-for="UserName" class="form-control" />
-                            <span asp-validation-for="UserName" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="Password" class="control-label"></label>
-                            <input type="password" asp-for="Password" class="form-control" />
-                            <span asp-validation-for="Password" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <input type="submit" value="Login" class="btn btn-primary" />
-                        </div>
-                    </form>
-                </div>
-                <div class="col-md-4">
-                </div>
+                <span asp-validation-for="Password" class="text-danger"></span>
             </div>
-        </main>
+
+            <button type="submit" class="btn btn-primary">
+                Đăng nhập <i class="fa-solid fa-arrow-right ms-2"></i>
+            </button>
+        </form>
+        
+        <div class="text-center mt-4">
+            <p class="text-muted" style="font-size: 0.85rem;">&copy; 2026 - NguyenLPK SE182643</p>
+        </div>
     </div>
 
-    <footer class="border-top footer text-center">
-        <div class="container">
-            &copy; 2025 - NguyenLPKSE182643@fpt.edu.vn - 09.612.612.09
-        </div>
-    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
 </body>
 </html>

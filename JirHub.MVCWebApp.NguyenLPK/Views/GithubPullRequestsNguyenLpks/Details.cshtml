@@ -1,108 +1,177 @@
 ﻿@model JirHub.Entities.NguyenLPK.Models.GithubPullRequestsNguyenLpk
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Chi tiết Pull Request";
 }
 
-<h1>Details</h1>
-
-<div>
-    <h4>GithubPullRequestsNguyenLpk</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PrNumber)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PrNumber)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.State)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.State)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsMerged)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsMerged)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AuthorGithubUsername)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AuthorGithubUsername)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Additions)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Additions)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Deletions)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Deletions)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ChangedFiles)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ChangedFiles)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedAt)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UpdatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UpdatedAt)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MergedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MergedAt)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ClosedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ClosedAt)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LinkedIssueKey)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LinkedIssueKey)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MappedMember)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MappedMember.MemberId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Repo)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Repo.RepoId)
-        </dd>
-    </dl>
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h2><i class="fa fa-code-pull-request me-2"></i>Pull Request #@Model.PrNumber</h2>
+        <p>@Model.Title</p>
+    </div>
+    <a asp-action="Index" asp-route-repoId="@Model.RepoId" class="btn btn-light">
+        <i class="fa fa-arrow-left me-1"></i> Quay lại DS PR
+    </a>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.PrId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <!-- States -->
+        <div class="d-flex gap-2 mb-4">
+            @if (Model.IsMerged == true)
+            {
+                <span class="badge py-2 px-3 fs-6 text-white" style="background:#6f42c1">
+                    <i class="fa fa-check me-1"></i>Merged
+                </span>
+            }
+            else if (Model.State == "open")
+            {
+                <span class="badge py-2 px-3 fs-6 bg-success">
+                    <i class="fa fa-circle-dot me-1"></i>Open
+                </span>
+            }
+            else
+            {
+                <span class="badge py-2 px-3 fs-6 bg-danger">
+                    <i class="fa fa-times me-1"></i>Closed
+                </span>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.LinkedIssueKey))
+            {
+                <span class="badge py-2 px-3 fs-6 text-white" style="background:#0052CC">
+                    <i class="fab fa-jira me-1"></i>@Model.LinkedIssueKey
+                </span>
+            }
+        </div>
+
+        <!-- LOC Stats -->
+        <div class="card mb-4">
+            <div class="card-header bg-light fw-semibold">
+                <i class="fa fa-chart-bar me-2 text-primary"></i>Thống kê thay đổi code
+            </div>
+            <div class="card-body">
+                <div class="row g-3 text-center">
+                    <div class="col-4">
+                        <div class="p-3 rounded" style="background:#f0fdf4">
+                            <div class="fs-2 fw-bold text-success">+@(Model.Additions ?? 0)</div>
+                            <div class="text-muted small">Dòng thêm</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 rounded" style="background:#fff1f2">
+                            <div class="fs-2 fw-bold text-danger">-@(Model.Deletions ?? 0)</div>
+                            <div class="text-muted small">Dòng xóa</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 rounded" style="background:#eff6ff">
+                            <div class="fs-2 fw-bold text-primary">@(Model.ChangedFiles ?? 0)</div>
+                            <div class="text-muted small">Files thay đổi</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reviews -->
+        @if (Model.GithubPrReviewsNguyenLpks != null && Model.GithubPrReviewsNguyenLpks.Any())
+        {
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <i class="fa fa-magnifying-glass-code me-2"></i>Code Reviews
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Reviewer</th>
+                                <th>Kết quả</th>
+                                <th>Ngày review</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var review in Model.GithubPrReviewsNguyenLpks)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
+                                                 style="width:28px;height:28px;font-size:.7rem;flex-shrink:0">
+                                                @(review.ReviewerUsername?.Length > 0 ? review.ReviewerUsername[0].ToString().ToUpper() : "?")
+                                            </div>
+                                            @review.ReviewerUsername
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @{
+                                            var (rbg, rtxt) = review.State switch {
+                                                "APPROVED"         => ("bg-success", "Approved"),
+                                                "CHANGES_REQUESTED"=> ("bg-danger", "Yêu cầu sửa"),
+                                                _                  => ("bg-secondary", review.State ?? "—")
+                                            };
+                                        }
+                                        <span class="badge @rbg">@rtxt</span>
+                                    </td>
+                                    <td>
+                                        @(review.SubmittedAt.HasValue
+                                            ? review.SubmittedAt.Value.ToString("dd/MM/yyyy HH:mm")
+                                            : "—")
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <i class="fa fa-circle-info me-2"></i>Thông tin
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-borderless mb-0">
+                    <tr>
+                        <td class="text-muted ps-3"><i class="fa fa-user me-1"></i>Tác giả</td>
+                        <td><strong>@Model.AuthorGithubUsername</strong></td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-3"><i class="fa fa-calendar me-1"></i>Tạo lúc</td>
+                        <td>@(Model.CreatedAt.HasValue ? Model.CreatedAt.Value.ToString("dd/MM/yyyy HH:mm") : "—")</td>
+                    </tr>
+                    @if (Model.MergedAt.HasValue)
+                    {
+                        <tr>
+                            <td class="text-muted ps-3"><i class="fa fa-check me-1 text-success"></i>Merge lúc</td>
+                            <td>@Model.MergedAt.Value.ToString("dd/MM/yyyy HH:mm")</td>
+                        </tr>
+                    }
+                    @if (Model.ClosedAt.HasValue)
+                    {
+                        <tr>
+                            <td class="text-muted ps-3"><i class="fa fa-times me-1 text-danger"></i>Đóng lúc</td>
+                            <td>@Model.ClosedAt.Value.ToString("dd/MM/yyyy HH:mm")</td>
+                        </tr>
+                    }
+                    <tr>
+                        <td class="text-muted ps-3"><i class="fa fa-user-tag me-1"></i>Thành viên</td>
+                        <td>
+                            @if (Model.MappedMember != null)
+                            {
+                                <span>ID: @Model.MappedMember.MemberId</span>
+                            }
+                            else { <span class="text-muted fst-italic">Chưa mapping</span> }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-3"><i class="fab fa-github me-1"></i>Repo</td>
+                        <td>@(Model.Repo?.RepoName ?? $"#{Model.RepoId}")</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>

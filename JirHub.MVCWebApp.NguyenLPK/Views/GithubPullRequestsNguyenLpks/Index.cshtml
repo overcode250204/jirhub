@@ -1,119 +1,156 @@
 ﻿@model IEnumerable<JirHub.Entities.NguyenLPK.Models.GithubPullRequestsNguyenLpk>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Lịch sử Pull Request";
+    var merged  = Model.Count(p => p.IsMerged == true);
+    var open    = Model.Count(p => p.State == "open");
+    var closed  = Model.Count(p => p.State != "open" && p.IsMerged != true);
 }
 
-<h1>Index</h1>
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h2><i class="fa fa-code-pull-request me-2"></i>Lịch sử Pull Request</h2>
+        <p>
+            @if (ViewData["RepoName"] != null)
+            {
+                <span><i class="fab fa-github me-1"></i>@ViewData["RepoName"]</span>
+            }
+        </p>
+    </div>
+    <a asp-controller="ProjectReposNguyenLpks" asp-action="Index" class="btn btn-light">
+        <i class="fa fa-arrow-left me-1"></i> Quay lại DS Repo
+    </a>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.PrNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.State)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsMerged)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AuthorGithubUsername)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Additions)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Deletions)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ChangedFiles)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UpdatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MergedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ClosedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LinkedIssueKey)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MappedMember)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Repo)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.PrNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.State)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsMerged)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AuthorGithubUsername)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Additions)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Deletions)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ChangedFiles)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UpdatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MergedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ClosedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LinkedIssueKey)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MappedMember.MemberId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Repo.RepoId)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.PrId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.PrId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.PrId">Delete</a>
-            </td>
-        </tr>
+@if (Model.Any())
+{
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card text-center border-0" style="background:#f0fdf4">
+                <div class="card-body py-3">
+                    <div class="fs-3 fw-bold" style="color:#16a34a">@merged</div>
+                    <div class="text-muted small"><i class="fa fa-check-circle me-1 text-success"></i>Đã Merge</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center border-0" style="background:#eff6ff">
+                <div class="card-body py-3">
+                    <div class="fs-3 fw-bold text-primary">@open</div>
+                    <div class="text-muted small"><i class="fa fa-circle-dot me-1 text-primary"></i>Đang mở</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center border-0" style="background:#fff1f2">
+                <div class="card-body py-3">
+                    <div class="fs-3 fw-bold text-danger">@closed</div>
+                    <div class="text-muted small"><i class="fa fa-times-circle me-1 text-danger"></i>Bị từ chối</div>
+                </div>
+            </div>
+        </div>
+    </div>
 }
-    </tbody>
-</table>
+
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th style="width:6%">PR#</th>
+                    <th>Tiêu đề</th>
+                    <th style="width:10%">Trạng thái</th>
+                    <th style="width:12%">Tác giả</th>
+                    <th style="width:10%">LOC (+/-)</th>
+                    <th style="width:12%">Jira Task</th>
+                    <th style="width:11%">Ngày tạo</th>
+                    <th style="width:5%"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="8" class="text-center py-5 text-muted">
+                            <i class="fa fa-inbox fa-3x mb-3 d-block text-secondary"></i>
+                            <strong>Chưa có Pull Request nào.</strong><br/>
+                            <small>Bấm <kbd>Sync</kbd> trên trang Repo để đồng bộ dữ liệu từ GitHub.</small>
+                        </td>
+                    </tr>
+                }
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><span class="badge bg-secondary">#@item.PrNumber</span></td>
+                        <td>
+                            <span class="d-inline-block text-truncate" style="max-width:280px" title="@item.Title">
+                                @item.Title
+                            </span>
+                        </td>
+                        <td>
+                            @if (item.IsMerged == true)
+                            {
+                                <span class="badge text-white" style="background:#6f42c1">
+                                    <i class="fa fa-check me-1"></i>Merged
+                                </span>
+                            }
+                            else if (item.State == "open")
+                            {
+                                <span class="badge bg-success">
+                                    <i class="fa fa-circle-dot me-1"></i>Open
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">
+                                    <i class="fa fa-times me-1"></i>Closed
+                                </span>
+                            }
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
+                                     style="width:28px;height:28px;font-size:.7rem;flex-shrink:0">
+                                    @(item.AuthorGithubUsername?.Length > 0 ? item.AuthorGithubUsername[0].ToString().ToUpper() : "?")
+                                </div>
+                                <small class="text-truncate" style="max-width:80px">@item.AuthorGithubUsername</small>
+                            </div>
+                        </td>
+                        <td class="fw-semibold" style="font-size:.85rem">
+                            <span class="text-success">+@(item.Additions ?? 0)</span>
+                            <span class="text-muted">/</span>
+                            <span class="text-danger">-@(item.Deletions ?? 0)</span>
+                        </td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(item.LinkedIssueKey))
+                            {
+                                <span class="badge text-white" style="background:#0052CC;font-size:.8rem">
+                                    <i class="fab fa-jira me-1"></i>@item.LinkedIssueKey
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="text-muted small fst-italic">—</span>
+                            }
+                        </td>
+                        <td>
+                            @if (item.CreatedAt.HasValue)
+                            {
+                                <div class="lh-1">
+                                    <div class="fw-semibold" style="font-size:.83rem">@item.CreatedAt.Value.ToString("dd/MM/yyyy")</div>
+                                    <small class="text-muted">@item.CreatedAt.Value.ToString("HH:mm")</small>
+                                </div>
+                            }
+                        </td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@item.PrId"
+                               class="btn btn-sm btn-outline-primary" title="Xem chi tiết">
+                                <i class="fa fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

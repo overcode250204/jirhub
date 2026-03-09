@@ -1,6 +1,4 @@
-﻿@model JirHub.MVCWebApp.NguyenLPK.Models.LoginRequest
-
-@{
+﻿@{
     Layout = null;
 }
 
@@ -9,43 +7,110 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - JirHub.MVCWebApp.FE.NguyenLpk</title>
+    <title>403 Forbidden - JirHub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/zPayment.MVCWebApp.FE.VuLNS.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            text-align: center;
+        }
+        .error-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+            padding: 4rem 3rem;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            overflow: hidden;
+        }
+        .error-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(to right, #ef4444, #f59e0b);
+        }
+        .icon-box {
+            width: 100px;
+            height: 100px;
+            background: #fef2f2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            color: #ef4444;
+            font-size: 3rem;
+        }
+        h1 {
+            font-weight: 800;
+            color: #1e293b;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        h2 {
+            font-weight: 600;
+            color: #475569;
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        p {
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+        .btn-back {
+            background: #1e293b;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-back:hover {
+            background: #0f172a;
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">JirHub.MVCWebApp.FE.NguyenLpk - <span class="text-danger">PRN222</span></a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-            </div>
-        </nav>
-    </header>
-
-    <div class="container">
-        <main role="main" class="pb-3">
-            <div class="row text-center">
-                <h3 class="text-danger">Forbidden</h3>
-                <h4 class="text-danger">You do not have permission to do this function!</h4>
-                <div>
-                    <a asp-action="Login" asp-asp-controller="Account" class="btn btn-primary">Login</a>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <footer class="border-top footer text-center">
-        <div class="container">
-            &copy; 2025 - NguyenLPKSE182643@fpt.edu.vn - 09.612.612.09
+    <div class="error-container">
+        <div class="icon-box">
+            <i class="fa-solid fa-shield-halved"></i>
         </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+        <h1>403</h1>
+        <h2>Truy cập bị từ chối</h2>
+        <p>
+            Bạn không có quyền truy cập vào chức năng hoặc trang này. 
+            Vui lòng liên hệ với Quản trị viên nếu bạn cho rằng đây là một sự nhầm lẫn.
+        </p>
+        
+        <a href="javascript:history.back()" class="btn-back me-2">
+            <i class="fa-solid fa-arrow-left"></i> Quay lại
+        </a>
+        <a asp-controller="Home" asp-action="Index" class="btn-back" style="background: #2563eb;">
+            <i class="fa-solid fa-house"></i> Trang chủ
+        </a>
+    </div>
 </body>
 </html>

@@ -17,9 +17,9 @@ namespace JirHub.Repositories.NguyenLPK.implements
         public SystemUserAccountRepository(prn222Context context) => _context = context;
 
 
-        public async Task<SystemUserAccount> GetUserAccountAsync(string userName, string password)
+        public async Task<User> GetUserAccountAsync(string userName, string password)
         {
-            return await _context.SystemUserAccounts.FirstOrDefaultAsync(u => u.Email == userName && u.Password == password && u.IsActive == true);
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == userName && u.PasswordHash == password);
             //return await _context.SystemUserAccounts.FirstOrDefaultAsync(u => u.Email == userName && u.Password == password && u.IsActive == true);
             //return await _context.SystemUserAccounts.FirstOrDefaultAsync(u => u.Phone == userName && u.Password == password && u.IsActive == true);
             //return await _context.SystemUserAccounts.FirstOrDefaultAsync(u => u.EmployeeCode == userName && u.Password == password && u.IsActive == true);

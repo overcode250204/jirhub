@@ -1,72 +1,117 @@
 ﻿@model JirHub.Entities.NguyenLPK.Models.GithubCommitsNguyenLpk
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Chi tiết Commit";
+    var locTotal = (Model.Additions ?? 0) + (Model.Deletions ?? 0);
 }
 
-<h1>Details</h1>
-
-<div>
-    <h4>GithubCommitsNguyenLpk</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CommitHash)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CommitHash)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Message)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Message)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Additions)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Additions)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Deletions)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Deletions)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CommittedDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CommittedDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AuthorGithubUsername)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AuthorGithubUsername)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LinkedIssueKey)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LinkedIssueKey)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MappedMember)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MappedMember.MemberId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Repo)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Repo.RepoId)
-        </dd>
-    </dl>
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h2><i class="fa fa-code-commit me-2"></i>Chi tiết Commit</h2>
+        <p>
+            <code style="background:rgba(255,255,255,.2);padding:2px 8px;border-radius:6px">
+                @Model.CommitHash
+            </code>
+        </p>
+    </div>
+    <a asp-action="Index" asp-route-repoId="@Model.RepoId" class="btn btn-light">
+        <i class="fa fa-arrow-left me-1"></i> Quay lại DS Commit
+    </a>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.CommitId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <i class="fa fa-message me-2"></i>Commit Message
+            </div>
+            <div class="card-body">
+                <p class="mb-0 fs-5 fw-semibold">@Model.Message</p>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header bg-light fw-semibold">
+                <i class="fa fa-chart-bar me-2 text-primary"></i>Thống kê Lines of Code (LOC)
+            </div>
+            <div class="card-body">
+                <div class="row g-3 text-center">
+                    <div class="col-4">
+                        <div class="p-3 rounded" style="background:#f0fdf4">
+                            <div class="fs-2 fw-bold text-success">+@(Model.Additions ?? 0)</div>
+                            <div class="text-muted small">Dòng thêm (additions)</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 rounded" style="background:#fff1f2">
+                            <div class="fs-2 fw-bold text-danger">-@(Model.Deletions ?? 0)</div>
+                            <div class="text-muted small">Dòng xóa (deletions)</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 rounded" style="background:#eff6ff">
+                            <div class="fs-2 fw-bold text-primary">@locTotal</div>
+                            <div class="text-muted small">Tổng LOC thay đổi</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <i class="fa fa-circle-info me-2"></i>Thông tin
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-borderless mb-0">
+                    <tr>
+                        <td class="text-muted ps-3" style="width:45%"><i class="fa fa-user me-1"></i>Tác giả</td>
+                        <td><strong>@Model.AuthorGithubUsername</strong></td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-3"><i class="fa fa-calendar me-1"></i>Ngày commit</td>
+                        <td>
+                            @if (Model.CommittedDate.HasValue)
+                            {
+                                <span>@Model.CommittedDate.Value.ToString("dd/MM/yyyy HH:mm")</span>
+                            }
+                            else { <span class="text-muted">—</span> }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-3"><i class="fab fa-jira me-1"></i>Jira Task</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(Model.LinkedIssueKey))
+                            {
+                                <span class="badge text-white" style="background:#0052CC">@Model.LinkedIssueKey</span>
+                            }
+                            else { <span class="text-muted fst-italic">Không liên kết</span> }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-3"><i class="fa fa-user-tag me-1"></i>Thành viên</td>
+                        <td>
+                            @if (Model.MappedMember != null)
+                            {
+                                <span>ID: @Model.MappedMember.MemberId</span>
+                            }
+                            else { <span class="text-muted fst-italic">Chưa mapping</span> }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-3"><i class="fab fa-github me-1"></i>Repository</td>
+                        <td>
+                            @if (Model.Repo != null)
+                            {
+                                <span>@Model.Repo.RepoName</span>
+                            }
+                            else { <span class="text-muted">Repo #@Model.RepoId</span> }
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>

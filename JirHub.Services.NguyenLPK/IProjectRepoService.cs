@@ -1,4 +1,4 @@
-﻿using JirHub.Entities.NguyenLPK.Models;
+using JirHub.Entities.NguyenLPK.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -25,5 +25,8 @@ namespace JirHub.Services.NguyenLPK
         Task<List<ProjectReposNguyenLpk>> SearchProjectRepo(string nameRepo, string repoType, string groupName);
         Task<int> CreateProjectRepoAsync(ProjectReposNguyenLpk projectReposNguyenLpk);
         Task<List<ProjectReposNguyenLpk>> GetAllAsync();
+        Task<List<int>> GetLeaderGroupIdsAsync(int userId);
+        Task<List<int>> GetStudentGroupIdsAsync(int userId);
+        Task<List<int>> GetLecturerGroupIdsAsync(int lecturerId);
     }
 }

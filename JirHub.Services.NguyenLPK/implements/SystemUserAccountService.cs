@@ -14,7 +14,7 @@ namespace JirHub.Services.NguyenLPK.implements
 
         public SystemUserAccountService() => _systemUserAccountRepository = new SystemUserAccountRepository();
 
-        public async Task<SystemUserAccount> GetUserAccountAsync(string username, string password)
+        public async Task<User> GetUserAccountAsync(string username, string password)
         {
 
             try
