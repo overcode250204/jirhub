@@ -1,4 +1,4 @@
-﻿using JirHub.Entities.NguyenLPK.Models;
+using JirHub.Entities.NguyenLPK.Models;
 using JirHub.Repositories.NguyenLPK.Base;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -24,6 +24,15 @@ namespace JirHub.Repositories.NguyenLPK.implements
         public async Task<GithubPrReviewsNguyenLpk> ExistsReview(long prId, string login, DateTime dateTime)
         {
             return await _context.GithubPrReviewsNguyenLpks.Where(pr => pr.PrId == prId && pr.ReviewerUsername == login && pr.SubmittedAt == dateTime).FirstOrDefaultAsync();
+        }
+
+        public async Task<HashSet<string>> GetExistingReviewKeysAsync(long prId)
+        {
+            var keys = await _context.GithubPrReviewsNguyenLpks
+                .Where(r => r.PrId == prId)
+                .Select(r => r.ReviewerUsername + "_" + r.SubmittedAt)
+                .ToListAsync();
+            return new HashSet<string>(keys);
         }
     }
 }

@@ -123,7 +123,6 @@ namespace JirHub.Services.NguyenLPK.implements
                 }
             }
         }
-
         public async Task<bool> SyncGroupDataAsync(int groupId)
         {
             bool result = false;
@@ -144,6 +143,7 @@ namespace JirHub.Services.NguyenLPK.implements
                     var repoInfo =  GitHubUtils.GetRepoInfoFromUrl(repo.RepoUrl);
                     if (repo.IsActive == false) continue;
                     if (repoInfo == null) continue;
+
                     await SyncCommitsAsync(client, repo, repoInfo.Value.Owner, repoInfo.Value.Name, members);
                     await SyncPullRequestsAsync(client, repo, repoInfo.Value.Owner, repoInfo.Value.Name, members);
                     await SyncGithubIssuesAsync(client, repo, repoInfo.Value.Owner, repoInfo.Value.Name);
@@ -163,14 +163,17 @@ namespace JirHub.Services.NguyenLPK.implements
             try
             {
                 var issues = await client.Issue.GetAllForRepository(owner, name);
+                
+                // Tối ưu N+1: Lấy trước toàn bộ IssueNumber của Repo này bằng Repository
+                var existingIssues = await _githubIssueRepository.GetExistingIssueNumbersAsync(repo.RepoId);
+
                 foreach (var issue in issues)
                 {
                     if (issue.PullRequest != null) continue;
 
-                    bool exists = await _githubIssueRepository.ExistIusse(issue.Number, repo.RepoId);
-                    if (!exists)
+                    if (!existingIssues.Contains(issue.Number))
                     {
-                        _githubIssueRepository.CreateAsync(new GithubIssuesNguyenLpk
+                        await _githubIssueRepository.CreateAsync(new GithubIssuesNguyenLpk
                         {
                             RepoId = repo.RepoId,
                             IssueNumber = issue.Number,
@@ -195,9 +198,11 @@ namespace JirHub.Services.NguyenLPK.implements
 
             IReadOnlyList<PullRequest> pullRequests = await client.PullRequest.GetAllForRepository(owner, name, pullRequestRequest);
 
+            var allDbPrs = await _gitHubPrRepository.GetExistingPullRequestsDictAsync(repo.RepoId);
+            
             foreach(PullRequest pullRequest in pullRequests)
             {
-                GithubPullRequestsNguyenLpk existingPullRequest = await _gitHubPrRepository.ExistPullRequestAsync(pullRequest.Number, repo.RepoId);
+                allDbPrs.TryGetValue(pullRequest.Number, out GithubPullRequestsNguyenLpk existingPullRequest);
                 
                 if (existingPullRequest == null)
                 {
@@ -215,9 +220,12 @@ namespace JirHub.Services.NguyenLPK.implements
                 existingPullRequest.IsMerged = pullRequest.Merged;
                 existingPullRequest.MergedAt = pullRequest.MergedAt?.DateTime;
                 existingPullRequest.AuthorGithubUsername = pullRequest.User.Login;
-                existingPullRequest.Additions = pullRequest.Additions;
-                existingPullRequest.Deletions = pullRequest.Deletions;
-                existingPullRequest.ChangedFiles = pullRequest.ChangedFiles;
+
+                
+                var detailedPr = await client.PullRequest.Get(owner, name, pullRequest.Number);
+                existingPullRequest.Additions = detailedPr.Additions;
+                existingPullRequest.Deletions = detailedPr.Deletions;
+                existingPullRequest.ChangedFiles = detailedPr.ChangedFiles;
 
                 GroupMember? member = members.FirstOrDefault(m => m.GithubUsername == existingPullRequest.AuthorGithubUsername);
                 if (member != null)
@@ -232,10 +240,14 @@ namespace JirHub.Services.NguyenLPK.implements
                 }
                 await _gitHubPrRepository.UpdatePullRequestAsync(existingPullRequest);
                 IReadOnlyList<PullRequestReview> reviews = await client.PullRequest.Review.GetAll(owner, name, pullRequest.Number);
-                foreach(var review in reviews)
+                
+                var existingReviewKeys = await _githubPrReviewRepository.GetExistingReviewKeysAsync(existingPullRequest.PrId);
+
+                foreach (var review in reviews)
                 {
-                   GithubPrReviewsNguyenLpk existingReview =  await _githubPrReviewRepository.ExistsReview(existingPullRequest.PrId, review.User.Login, review.SubmittedAt.DateTime);
-                    if (existingReview == null)
+                    var reviewKey = $"{review.User.Login}_{review.SubmittedAt.DateTime}";
+
+                    if (!existingReviewKeys.Contains(reviewKey))
                     {
                         var newReview = new GithubPrReviewsNguyenLpk
                         {
@@ -251,9 +263,10 @@ namespace JirHub.Services.NguyenLPK.implements
                             newReview.MappedReviewerId = reviewerMember.MemberId;
                         }
                         await _githubPrReviewRepository.CreateAsync(newReview);
+                        
+                        // Để chống duplicate cho vòng lặp tiếp theo của Review
+                        existingReviewKeys.Add(reviewKey); 
                     }
-                
-                
                 }
             }
 

@@ -1,4 +1,4 @@
-﻿using JirHub.Entities.NguyenLPK.Models;
+using JirHub.Entities.NguyenLPK.Models;
 using JirHub.Repositories.NguyenLPK.Base;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -20,6 +20,15 @@ namespace JirHub.Repositories.NguyenLPK.implements
         public async Task<bool> ExistIusse(int number, int repoId)
         {
             return await _context.GithubIssuesNguyenLpks.AnyAsync(issue => issue.IssueNumber == number && issue.RepoId == repoId);
+        }
+
+        public async Task<HashSet<int>> GetExistingIssueNumbersAsync(int repoId)
+        {
+            var issues = await _context.GithubIssuesNguyenLpks
+                .Where(i => i.RepoId == repoId)
+                .Select(i => i.IssueNumber)
+                .ToListAsync();
+            return new HashSet<int>(issues);
         }
     }
 }
