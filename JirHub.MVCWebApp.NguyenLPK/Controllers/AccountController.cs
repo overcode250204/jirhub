@@ -36,7 +36,7 @@ namespace JirHub.MVCWebApp.NguyenLPK.Controllers
 
                 if (userAccount != null)
                 {
-                    string roleId = userAccount.Role ?? "STUDENT"; // Default if null
+                    string roleId = userAccount.Role ?? "STUDENT";
                     var claims = new List<Claim>
                                 {
                                     new Claim(ClaimTypes.Name, userAccount.FullName),

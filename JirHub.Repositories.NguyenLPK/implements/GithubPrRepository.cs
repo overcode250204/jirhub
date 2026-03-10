@@ -1,4 +1,4 @@
-﻿using JirHub.Entities.NguyenLPK.Models;
+using JirHub.Entities.NguyenLPK.Models;
 using JirHub.Repositories.NguyenLPK.Base;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -56,5 +56,12 @@ namespace JirHub.Repositories.NguyenLPK.implements
             await UpdateAsync(pr);
         }
 
+        public async Task<Dictionary<int, GithubPullRequestsNguyenLpk>> GetExistingPullRequestsDictAsync(int repoId)
+        {
+            var prs = await _context.GithubPullRequestsNguyenLpks
+                .Where(p => p.RepoId == repoId)
+                .ToListAsync();
+            return prs.ToDictionary(p => p.PrNumber, p => p);
+        }
     }
 }

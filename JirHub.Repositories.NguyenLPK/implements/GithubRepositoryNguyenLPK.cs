@@ -32,12 +32,11 @@ namespace JirHub.Repositories.NguyenLPK.implements
         }
         public async Task<HashSet<string>> GetExistingCommitHashesAsync(int repoId)
         {
-            // Chỉ select CommitHash để nhẹ dữ liệu
             var hashes = await _context.GithubCommitsNguyenLpks
                                        .Where(c => c.RepoId == repoId)
                                        .Select(c => c.CommitHash)
                                        .ToListAsync();
-            return new HashSet<string>(hashes); // HashSet giúp tìm kiếm O(1) siêu nhanh
+            return new HashSet<string>(hashes); 
         }
 
         public async Task AddRangeCommitsAsync(IEnumerable<GithubCommitsNguyenLpk> commits)
